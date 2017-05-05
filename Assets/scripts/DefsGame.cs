@@ -5,6 +5,7 @@ public struct DefsGame {
 	public static int NoAds = 0;
 	public static BillingManager IAPs;
 	public static GameServicesManager GameServices;
+	public static CameraMovement CameraMovement;
 //    public static ScreenGame ScreenGame;
 //	public static ScreenCoins ScreenCoins;
 //	public static ScreenSkins ScreenSkins;
