@@ -19,6 +19,11 @@ public class CameraMovement : MonoBehaviour {
 		}
 	}
 
+	public void UpdatePosition()
+	{
+		transform.position = new Vector3(Target.position.x, Target.position.y, -10);
+	}
+
 	public void StartMoving()
 	{
 		_isMoving = true;

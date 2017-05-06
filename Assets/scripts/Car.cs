@@ -6,8 +6,15 @@ public class Car : MonoBehaviour
 	public static event Action OnCrash;
 
 	public CarSimulator CarSimulator;
+	public ParticleSystem[] Particles;
 	private bool _isCash;
 	private float _crashRotation;
+	private Vector3 _startPosition;
+
+	void Start()
+	{
+		_startPosition = transform.position;
+	}
 
 	// Update is called once per frame
 	void Update ()
@@ -15,16 +22,29 @@ public class Car : MonoBehaviour
 		transform.position = CarSimulator.transform.position;
 		if (_isCash)
 		{
-			if (_crashRotation > 0.5f)
+			if (Mathf.Abs(_crashRotation) > 0.5f)
 			{
 				transform.RotateAround(Vector3.forward, _crashRotation*Mathf.Deg2Rad);
-				_crashRotation -= _crashRotation*0.1f;
+				_crashRotation = Mathf.Lerp(_crashRotation, 0, 0.1f);
 			}
 		}
 		else
 		{
 			transform.rotation = Quaternion.Lerp(transform.rotation, CarSimulator.transform.rotation, 0.25f);
 		}
+	}
+
+	public void Respown()
+	{
+		transform.position = _startPosition;
+		transform.rotation = Quaternion.identity;
+		foreach (ParticleSystem particle in Particles)
+		{
+			particle.Stop();
+			particle.Play();
+		}
+
+		_isCash = false;
 	}
 
 	public void Crash(float velocity)
