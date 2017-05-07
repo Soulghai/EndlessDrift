@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-public class CarSimulator : MonoBehaviour {
+public class CarSimulator : MonoBehaviour
+{
+	public static event Action OnGameOver;
 	public GameObject GoalPointObject;
 	public Car Car;
 	public float Velocity = 70f;
@@ -11,7 +14,14 @@ public class CarSimulator : MonoBehaviour {
 	private bool _isMoving;
 	private bool _isActive;
 
+	private RoadManager.RoadType _startType;
+
 	// Use this for initialization
+
+	void Awake()
+	{
+		DefsGame.CarSimulator = this;
+	}
 
 	void OnEnable() {
 		Car.OnCrash += Crash;
@@ -21,38 +31,45 @@ public class CarSimulator : MonoBehaviour {
 		Car.OnCrash -= Crash;
 	}
 
+	public void SetStartRoadType(RoadManager.RoadType type)
+	{
+		_startType = type;
+	}
+
 	public void Respown()
 	{
 		_isActive = true;
 		_isCrash = false;
-		Car.Respown();
-		transform.position = Car.transform.position;
+
+		transform.position = new Vector3(0f, -6f, 0f);
 		transform.rotation = Quaternion.identity;
 
 		Vector2 currentForwardNormal = transform.up * _radius;
 		_goalPoint = new Vector3(transform.position.x + currentForwardNormal.x,
 			transform.position.y + currentForwardNormal.y, transform.position.z);
 		GoalPointObject.transform.position = _goalPoint;
-		if (Car._startType == RoadManager.RoadType.UpToRight)
+		if (_startType == RoadManager.RoadType.UpToRight)
 		{
 			CurrVelocity = -Velocity;
 			transform.RotateAround(_goalPoint, Vector3.forward, -80f);
 		}
-		else if (Car._startType == RoadManager.RoadType.RightToDown)
+		else if (_startType == RoadManager.RoadType.RightToDown)
 		{
 			CurrVelocity = Velocity;
 			transform.RotateAround(_goalPoint, Vector3.forward, 80f);
 		}
-		else if (Car._startType == RoadManager.RoadType.DownToLeft)
+		else if (_startType == RoadManager.RoadType.DownToLeft)
 		{
 			CurrVelocity = -Velocity;
 			transform.RotateAround(_goalPoint, Vector3.forward, 100f);
 		}
-		else if (Car._startType == RoadManager.RoadType.LeftToUp)
+		else if (_startType == RoadManager.RoadType.LeftToUp)
 		{
 			CurrVelocity = Velocity;
 			transform.RotateAround(_goalPoint, Vector3.forward, -100f);
 		}
+
+		Car.Respown();
 	}
 
 	// Update is called once per frame
@@ -70,6 +87,8 @@ public class CarSimulator : MonoBehaviour {
 			{
 				Stop();
 				//Invoke("Respown", 0.5f);
+
+				GameEvents.Send(OnGameOver);
 			}
 		}
 		else if (_isMoving)

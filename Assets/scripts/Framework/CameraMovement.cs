@@ -10,11 +10,6 @@ public class CameraMovement : MonoBehaviour {
 		DefsGame.CameraMovement = this;
 	}
 
-	void Start()
-	{
-
-	}
-
 	// Update is called once per frame
 	void Update ()
 	{
