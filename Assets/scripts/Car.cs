@@ -4,7 +4,7 @@ using UnityEngine;
 public class Car : MonoBehaviour
 {
 	public static event Action OnCrash;
-	public static event Action OnAddRoadItem;
+	public static event Action <bool> OnAddRoadItem;
 
 	public CarSimulator CarSimulator;
 	public ParticleSystem[] Particles;
@@ -26,11 +26,11 @@ public class Car : MonoBehaviour
 		transform.position = CarSimulator.transform.position;
 		if (_isCash)
 		{
-			if (Mathf.Abs(_crashRotation) > 0.5f)
+			if (Mathf.Abs(_crashRotation) > 0.2f)
 			{
 //				transform.RotateAround(Vector3.forward, _crashRotation*Mathf.Deg2Rad);
 				transform.Rotate(Vector3.forward, _crashRotation);
-				_crashRotation = Mathf.Lerp(_crashRotation, 0, 0.1f);
+				_crashRotation = Mathf.Lerp(_crashRotation, 0, 0.07f);
 			}
 			else
 			{
@@ -66,10 +66,7 @@ public class Car : MonoBehaviour
 	public void Crash(float velocity)
 	{
 		_isCash = true;
-		if (velocity > 0f)
-			_crashRotation = 20f;
-		else
-			_crashRotation = -20f;
+		_crashRotation = velocity / 3f;
 	}
 
 	void OnTriggerEnter2D(Collider2D other)
@@ -91,11 +88,27 @@ public class Car : MonoBehaviour
 		if (other.CompareTag("RoadEdgeLine"))
 		{
 			RoadItem ri = other.gameObject.GetComponentInParent<RoadItem>();
-			if ((ri.CrossEdgeLine() == 1)&&(DefsGame.CameraMovement.IsMoving))
+			int counter = ri.CrossEdgeLine();
+			if (counter == 1)
 			{
-				GameEvents.Send(OnAddRoadItem);
+				GameEvents.Send(OnAddRoadItem, true);
 			}
-			if (ri.CrossEdgeLine() == 2)
+			if (counter == 2)
+			{
+				if (!DefsGame.CameraMovement.IsMoving)
+					DefsGame.CameraMovement.StartMoving();
+			}
+		}else
+
+		if (other.CompareTag("RoadEdgeLine2"))
+		{
+			RoadItem ri = other.gameObject.GetComponentInParent<RoadItem>();
+			int counter = ri.CrossEdgeLine();
+			if (counter == 1)
+			{
+				GameEvents.Send(OnAddRoadItem, false);
+			}
+			if (counter == 2)
 			{
 				if (!DefsGame.CameraMovement.IsMoving)
 					DefsGame.CameraMovement.StartMoving();
