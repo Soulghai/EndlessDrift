@@ -5,19 +5,13 @@ public class CarSimulator : MonoBehaviour {
 	public Car Car;
 	public float Velocity = 70f;
 	[HideInInspector] public float CurrVelocity;
-	private float _radius = 6.5f;
+	private float _radius = 6f;
 	private Vector3 _goalPoint;
 	private bool _isCrash;
 	private bool _isMoving;
 	private bool _isActive;
 
 	// Use this for initialization
-	void Start ()
-	{
-		_radius = -Car.transform.position.y;
-
-		Respown();
-	}
 
 	void OnEnable() {
 		Car.OnCrash += Crash;
@@ -27,16 +21,38 @@ public class CarSimulator : MonoBehaviour {
 		Car.OnCrash -= Crash;
 	}
 
-	private void Respown()
+	public void Respown()
 	{
 		_isActive = true;
 		_isCrash = false;
-		CurrVelocity = 0f;
 		Car.Respown();
 		transform.position = Car.transform.position;
 		transform.rotation = Quaternion.identity;
 
-		DefsGame.CameraMovement.UpdatePosition();
+		Vector2 currentForwardNormal = transform.up * _radius;
+		_goalPoint = new Vector3(transform.position.x + currentForwardNormal.x,
+			transform.position.y + currentForwardNormal.y, transform.position.z);
+		GoalPointObject.transform.position = _goalPoint;
+		if (Car._startType == RoadManager.RoadType.UpToRight)
+		{
+			CurrVelocity = -Velocity;
+			transform.RotateAround(_goalPoint, Vector3.forward, -80f);
+		}
+		else if (Car._startType == RoadManager.RoadType.RightToDown)
+		{
+			CurrVelocity = Velocity;
+			transform.RotateAround(_goalPoint, Vector3.forward, 80f);
+		}
+		else if (Car._startType == RoadManager.RoadType.DownToLeft)
+		{
+			CurrVelocity = -Velocity;
+			transform.RotateAround(_goalPoint, Vector3.forward, 100f);
+		}
+		else if (Car._startType == RoadManager.RoadType.LeftToUp)
+		{
+			CurrVelocity = Velocity;
+			transform.RotateAround(_goalPoint, Vector3.forward, -100f);
+		}
 	}
 
 	// Update is called once per frame
@@ -47,18 +63,19 @@ public class CarSimulator : MonoBehaviour {
 
 		if (_isCrash)
 		{
-			if (CurrVelocity > 1f) CurrVelocity -= 1.0f;
+			if (CurrVelocity > 1f) CurrVelocity -= 1.05f;
 			else
-			if (CurrVelocity < -1f) CurrVelocity += 1.0f;
+			if (CurrVelocity < -1f) CurrVelocity += 1.05f;
 			else
 			{
 				Stop();
-				Invoke("Respown", 0.5f);
+				//Invoke("Respown", 0.5f);
 			}
 		}
 		else if (_isMoving)
 		{
-			if (InputController.IsTouchOnScreen(TouchPhase.Began))
+			if ((InputController.IsTouchOnScreen(TouchPhase.Began))
+				&&(DefsGame.CameraMovement.IsMoving))
 			{
 				Vector2 currentForwardNormal = transform.up * -_radius;
 				_goalPoint = new Vector3(transform.position.x + currentForwardNormal.x,
@@ -72,13 +89,6 @@ public class CarSimulator : MonoBehaviour {
 				//Car.Rotate(new Vector3(0f, 0f, transform.rotation.z));
 			}
 		}
-		else
-		{
-			if (InputController.IsTouchOnScreen(TouchPhase.Began))
-			{
-				StartMove();
-			}
-		}
 	}
 
 	private void Stop()
@@ -87,12 +97,11 @@ public class CarSimulator : MonoBehaviour {
 		_isMoving = false;
 	}
 
-	private void StartMove()
+	public void StartMove()
 	{
 		_isActive = true;
 		_isMoving = true;
-		CurrVelocity = Velocity;
-		DefsGame.CameraMovement.StartMoving();
+		Car.StartMove();
 	}
 
 	public void Crash()

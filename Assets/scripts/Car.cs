@@ -10,10 +10,22 @@ public class Car : MonoBehaviour
 	private bool _isCash;
 	private float _crashRotation;
 	private Vector3 _startPosition;
+	[HideInInspector] public RoadManager.RoadType _startType;
 
 	void Start()
 	{
-		_startPosition = transform.position;
+		DefsGame.Car = this;
+		foreach (ParticleSystem particle in Particles)
+		{
+			particle.Stop();
+		}
+		enabled = false;
+	}
+
+	public void SetStartPosition(RoadManager.RoadType type)
+	{
+		_startPosition = new Vector3(0f, -6f, 0f);
+		_startType = type;
 	}
 
 	// Update is called once per frame
@@ -37,14 +49,21 @@ public class Car : MonoBehaviour
 	public void Respown()
 	{
 		transform.position = _startPosition;
-		transform.rotation = Quaternion.identity;
+		transform.rotation = CarSimulator.transform.rotation;
 		foreach (ParticleSystem particle in Particles)
 		{
 			particle.Stop();
-			particle.Play();
 		}
 
 		_isCash = false;
+	}
+
+	public void StartMove()
+	{
+		foreach (ParticleSystem particle in Particles)
+		{
+			particle.Play();
+		}
 	}
 
 	public void Crash(float velocity)
@@ -70,6 +89,16 @@ public class Car : MonoBehaviour
 			DefsGame.CameraMovement.StopMoving();
 			GameEvents.Send(OnCrash);
 			Crash(CarSimulator.CurrVelocity);
+		} else
+
+		if (other.CompareTag("RoadEdgeLine"))
+		{
+			RoadItem ri = other.gameObject.GetComponentInParent<RoadItem>();
+			if (ri.CrossEdgeLine() >= 2)
+			{
+				if (!DefsGame.CameraMovement.IsMoving)
+					DefsGame.CameraMovement.StartMoving();
+			}
 		}
 	}
 }

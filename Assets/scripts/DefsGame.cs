@@ -6,6 +6,7 @@ public struct DefsGame {
 	public static BillingManager IAPs;
 	public static GameServicesManager GameServices;
 	public static CameraMovement CameraMovement;
+	public static Car Car;
 //    public static ScreenGame ScreenGame;
 //	public static ScreenCoins ScreenCoins;
 //	public static ScreenSkins ScreenSkins;
