@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class ScreenColorAnimation : MonoBehaviour {
-	SpriteRenderer spr;
+	Image spr;
 	bool isShowAnimation;
 	bool isHideAnimation;
 	float alphaMax;
@@ -14,7 +13,7 @@ public class ScreenColorAnimation : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		spr = GetComponent<SpriteRenderer> ();
+		spr = GetComponent<Image> ();
 		isShowAnimation = false;
 		isHideAnimation = false;
 		alphaMax = 0.8f;

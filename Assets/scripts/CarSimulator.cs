@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class CarSimulator : MonoBehaviour
 {
-	public static event Action OnGameOver;
+	public static event Action <float> OnGameOver;
+	public static event Action <int> OnAddPoints;
 	public GameObject GoalPointObject;
 	public Car Car;
 	public float Velocity = 70f;
@@ -16,6 +17,8 @@ public class CarSimulator : MonoBehaviour
 	private bool _isActive;
 
 	private RoadManager.RoadType _startType;
+	private float _oldCurrVelocity;
+	private const float SpeedToAddPoints = 0.3f;
 
 	// Use this for initialization
 
@@ -74,6 +77,8 @@ public class CarSimulator : MonoBehaviour
 			transform.RotateAround(_goalPoint, Vector3.forward, -100f);
 		}
 
+		_oldCurrVelocity = Mathf.Abs(CurrVelocity) + SpeedToAddPoints;
+
 		Car.Respown();
 	}
 
@@ -93,12 +98,19 @@ public class CarSimulator : MonoBehaviour
 				Stop();
 				//Invoke("Respown", 0.5f);
 
-				GameEvents.Send(OnGameOver);
+				GameEvents.Send(OnGameOver, 0f);
 			}
 		}
 		else if (_isMoving)
 		{
 			CurrVelocity += _acceleration;
+
+			if (Mathf.Abs(CurrVelocity) - _oldCurrVelocity >= SpeedToAddPoints)
+			{
+				_oldCurrVelocity += SpeedToAddPoints;
+				GameEvents.Send(OnAddPoints, 1);
+			}
+
 			if ((InputController.IsTouchOnScreen(TouchPhase.Began))
 				&&(DefsGame.CameraMovement.IsMoving))
 			{
@@ -130,7 +142,7 @@ public class CarSimulator : MonoBehaviour
 		Car.StartMove();
 	}
 
-	public void Crash()
+	public void Crash(float delay)
 	{
 		_isCrash = true;
 	}

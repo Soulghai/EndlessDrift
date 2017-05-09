@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class Car : MonoBehaviour
 {
-	public static event Action OnCrash;
+	public static event Action <float> OnCrash;
 	public static event Action <bool> OnAddRoadItem;
 
 	public CarSimulator CarSimulator;
 	public ParticleSystem[] Particles;
-	private bool _isCash;
+	private bool _isCrash;
 	private float _crashRotation;
 
 	void Start()
@@ -24,7 +24,7 @@ public class Car : MonoBehaviour
 	void Update ()
 	{
 		transform.position = CarSimulator.transform.position;
-		if (_isCash)
+		if (_isCrash)
 		{
 			if (Mathf.Abs(_crashRotation) > 0.2f)
 			{
@@ -52,7 +52,7 @@ public class Car : MonoBehaviour
 			particle.Stop();
 		}
 
-		_isCash = false;
+		_isCrash = false;
 	}
 
 	public void StartMove()
@@ -65,23 +65,25 @@ public class Car : MonoBehaviour
 
 	public void Crash(float velocity)
 	{
-		_isCash = true;
+		_isCrash = true;
 		_crashRotation = velocity / 3f;
 	}
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
+		if (_isCrash) return;
+
 		if (other.CompareTag("WallInside"))
 		{
 			DefsGame.CameraMovement.StopMoving();
-			GameEvents.Send(OnCrash);
+			GameEvents.Send(OnCrash, 0f);
 			Crash(CarSimulator.CurrVelocity);
 		} else
 
 		if (other.CompareTag("WallOutside"))
 		{
 			DefsGame.CameraMovement.StopMoving();
-			GameEvents.Send(OnCrash);
+			GameEvents.Send(OnCrash, 0f);
 			Crash(CarSimulator.CurrVelocity);
 		} else
 

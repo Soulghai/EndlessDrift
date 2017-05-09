@@ -7,11 +7,9 @@ public struct DefsGame {
 	public static GameServicesManager GameServices;
 	public static CameraMovement CameraMovement;
 	public static CarSimulator CarSimulator;
-//    public static ScreenGame ScreenGame;
-//	public static ScreenCoins ScreenCoins;
-//	public static ScreenSkins ScreenSkins;
-//	public static RingManager RingManager;
-//	public static Ball Ball;
+    public static ScreenGame ScreenGame;
+	public static ScreenCoins ScreenCoins;
+	public static ScreenSkins ScreenSkins;
 	public static float WOW_MEETERER				= 0;
 	public static bool WOW_MEETERER_x2 = false;
 	public static bool WOW_MEETERER_x3 = false;
@@ -68,9 +66,8 @@ public struct DefsGame {
 	public const int BUBBLE_COLOR_HEAVY 					= 6;
 
 	static public int RateCounter 								= 0;
-//    public static Coins Coins { get; set; }
-//    public static CoinSensor CoinSensor { get; set; }
-//    public static EffectRingGoalAnimation EffectRingGoalAnimation { get; set; }
+    public static Coins Coins { get; set; }
+    public static CoinSensor CoinSensor { get; set; }
     public static bool IsNeedToShowCoin = false;
 
     static public void LoadVariables() {
