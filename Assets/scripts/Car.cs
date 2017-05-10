@@ -97,7 +97,7 @@ public class Car : MonoBehaviour
 			}
 			if (counter == 2)
 			{
-				if (!DefsGame.CameraMovement.IsMoving)
+				if (!DefsGame.CameraMovement.IsMovingToTarget)
 					DefsGame.CameraMovement.StartMoving();
 			}
 		}else
@@ -112,7 +112,7 @@ public class Car : MonoBehaviour
 			}
 			if (counter == 2)
 			{
-				if (!DefsGame.CameraMovement.IsMoving)
+				if (!DefsGame.CameraMovement.IsMovingToTarget)
 					DefsGame.CameraMovement.StartMoving();
 			}
 		}

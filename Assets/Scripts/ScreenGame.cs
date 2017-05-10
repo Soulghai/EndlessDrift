@@ -272,13 +272,13 @@ public class ScreenGame : MonoBehaviour {
 	            if (!_screenAnimation.isActiveAndEnabled)
 	            {
 	                _state = 5;
-	                Camera.main.transform.position = new Vector3(_cameraStartPos.x, _cameraStartPos.y, _cameraStartPos.z);
+//	                Camera.main.transform.position = new Vector3(_cameraStartPos.x, _cameraStartPos.y, _cameraStartPos.z);
 	                EndCurrentGame();
 	            }
 	            else
 	            {
-	                Camera.main.transform.position = new Vector3(_cameraStartPos.x + Random.Range(-0.015f, 0.015f),
-	                    _cameraStartPos.y + Random.Range(-0.015f, 0.015f), _cameraStartPos.z);
+//	                Camera.main.transform.position = new Vector3(_cameraStartPos.x + Random.Range(-0.015f, 0.015f),
+//	                    _cameraStartPos.y + Random.Range(-0.015f, 0.015f), _cameraStartPos.z);
 	            }
 	            break;
 	        case 5:

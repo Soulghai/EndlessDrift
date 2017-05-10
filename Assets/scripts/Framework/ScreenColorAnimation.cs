@@ -2,68 +2,76 @@
 using UnityEngine.UI;
 
 public class ScreenColorAnimation : MonoBehaviour {
-	Image spr;
-	bool isShowAnimation;
-	bool isHideAnimation;
-	float alphaMax;
-	float speed;
+	private Image _spr;
+	private bool _isShowAnimation;
+	private bool _isHideAnimation;
+	private float _alphaMax;
+	private float _speed;
 	//private var funcClose:Function;
-	bool isAutoHide;
-	bool isAnimation;
+	private bool _isAutoHide;
+	private bool _isAnimation;
+	private float _timeHide;
 
 	// Use this for initialization
 	void Start () {
-		spr = GetComponent<Image> ();
-		isShowAnimation = false;
-		isHideAnimation = false;
-		alphaMax = 0.8f;
-		isAutoHide = false;
-		speed = 0.1f;
+		_spr = GetComponent<Image> ();
+		_isShowAnimation = false;
+		_isHideAnimation = false;
+		_alphaMax = 1.0f;
+		_isAutoHide = false;
+		_speed = 0.1f;
 		gameObject.SetActive(false);
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-		if (isShowAnimation) {
-			Color _color = spr.color;
-				if (_color.a < alphaMax) _color.a += speed;
+		if (_isShowAnimation) {
+			Color color = _spr.color;
+				if (color.a < _alphaMax) color.a += _speed;
 			else {
-					_color.a = alphaMax;
-				isShowAnimation = false;
-				if (isAutoHide) Hide();
+					color.a = _alphaMax;
+				_isShowAnimation = false;
+				if (_isAutoHide) Hide();
 			}
-			spr.color = _color;
+			_spr.color = color;
 		}
 
-		if (isHideAnimation) {
-			Color _color = spr.color;
-			if (_color.a > 0f) _color.a -= speed;
-			else {
-				_color.a = 0f;
-				isHideAnimation = false;
-				gameObject.SetActive(false);
+		if (_isHideAnimation)
+		{
+			_timeHide += Time.deltaTime;
+			if (_timeHide > 0.5f)
+			{
+
+				Color color = _spr.color;
+				if (color.a > 0f) color.a -= _speed;
+				else
+				{
+					color.a = 0f;
+					_isHideAnimation = false;
+					gameObject.SetActive(false);
+				}
+				_spr.color = color;
 			}
-			spr.color = _color;
 		}
 
 	}
 
-	public void SetColor(float _red, float _green, float _blue) {
-		spr.color = new Color (_red, _green, _blue, spr.color.a);
+	public void SetColor(float red, float green, float blue) {
+		_spr.color = new Color (red, green, blue, _spr.color.a);
 	}
 
-	public void SetAlphaMax(float _value) {
-		alphaMax = _value;
+	public void SetAlphaMax(float value) {
+		_alphaMax = value;
 	}
 
-	public void SetAutoHide(bool _flag) {
-		isAutoHide = _flag;
+	public void SetAutoHide(bool flag) {
+		_isAutoHide = flag;
 	}
 
-	public void SetAnimation(bool _flag, float _speed = 0.05f) {
-		isAnimation = _flag;
-		speed = _speed;
+	public void SetAnimation(bool flag, float speed = 0.05f) {
+		_isAnimation = flag;
+		_speed = speed;
 	}
 
 	//public void setExitByClick(_func:Function) {
@@ -79,28 +87,31 @@ public class ScreenColorAnimation : MonoBehaviour {
 	}
 
 	public void Show() {
-		isShowAnimation = true;
-		isHideAnimation = false;
-		Color _color = spr.color;
-		if (isAnimation) {
-			_color.a = 0f;
+		_isShowAnimation = true;
+		_isHideAnimation = false;
+		Color color = _spr.color;
+		if (_isAnimation) {
+			color.a = 0f;
 		} else {
-			_color.a = alphaMax;
+			color.a = _alphaMax;
 		}
-		spr.color = _color;
+		_spr.color = color;
 		gameObject.SetActive(true);
 	}
 
 	public void Hide() {
-		isHideAnimation = true;
-		isShowAnimation = false;
-		Color _color = spr.color;
-		if (isAnimation) {
-			_color.a = alphaMax;
+		_isHideAnimation = true;
+		_isShowAnimation = false;
+
+		_timeHide = 0f;
+
+		Color color = _spr.color;
+		if (_isAnimation) {
+			color.a = _alphaMax;
 		} else {
-			_color.a = 0f;
+			color.a = 0f;
 			gameObject.SetActive(false);
 		}
-		spr.color = _color;
+		_spr.color = color;
 	}
 }

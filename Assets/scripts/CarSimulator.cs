@@ -17,8 +17,10 @@ public class CarSimulator : MonoBehaviour
 	private bool _isActive;
 
 	private RoadManager.RoadType _startType;
-	private float _oldCurrVelocity;
-	private const float SpeedToAddPoints = 0.3f;
+	private float _oldAddPointsValue;
+	private float _accToAddPoints;
+	private float _speedToAddPoints;
+	private float _pointsValue;
 
 	// Use this for initialization
 
@@ -77,7 +79,10 @@ public class CarSimulator : MonoBehaviour
 			transform.RotateAround(_goalPoint, Vector3.forward, -100f);
 		}
 
-		_oldCurrVelocity = Mathf.Abs(CurrVelocity) + SpeedToAddPoints;
+		_accToAddPoints = 0.0001f;
+		_speedToAddPoints = 0f;
+		_oldAddPointsValue = 0f;
+		_pointsValue = 0f;
 
 		Car.Respown();
 	}
@@ -104,15 +109,17 @@ public class CarSimulator : MonoBehaviour
 		else if (_isMoving)
 		{
 			CurrVelocity += _acceleration;
+			_speedToAddPoints += _accToAddPoints;
+			_pointsValue += _speedToAddPoints;
 
-			if (Mathf.Abs(CurrVelocity) - _oldCurrVelocity >= SpeedToAddPoints)
+			if (_pointsValue - _oldAddPointsValue >= 1.0f)
 			{
-				_oldCurrVelocity += SpeedToAddPoints;
-				GameEvents.Send(OnAddPoints, 1);
+				GameEvents.Send(OnAddPoints, (int)(_pointsValue-_oldAddPointsValue));
+				_oldAddPointsValue = _pointsValue;
 			}
 
 			if ((InputController.IsTouchOnScreen(TouchPhase.Began))
-				&&(DefsGame.CameraMovement.IsMoving))
+				&&(DefsGame.CameraMovement.IsMovingToTarget))
 			{
 				Vector2 currentForwardNormal = transform.up * -_radius;
 				_goalPoint = new Vector3(transform.position.x + currentForwardNormal.x,

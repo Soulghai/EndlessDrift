@@ -31,6 +31,7 @@ public class RoadManager : MonoBehaviour
 
 	private bool _ignoreFirst;
 	private int _floorCounter;
+//	private bool _isFirstLaunch = true;
 
 	// Use this for initialization
 	void Start ()
@@ -50,6 +51,22 @@ public class RoadManager : MonoBehaviour
 	}
 
 	private void Respown(float delay)
+	{
+		Invoke("RespownWithDelay", 0.3f);
+
+//		DefsGame.CameraMovement.IsMovingToTarget = false;
+//		DefsGame.CameraMovement.IsMoveToPosition = true;
+//		if (_firstRoadItemType == RoadType.UpToRight)
+//		{
+//			DefsGame.CameraMovement.TargetPosition = new Vector3(0, 6f, -10f);
+//		}
+//		else
+//		{
+//			DefsGame.CameraMovement.TargetPosition = new Vector3(0, -6f, -10f);
+//		}
+	}
+
+	private void RespownWithDelay()
 	{
 		Clear();
 		CreateStartRoadItems();
@@ -77,7 +94,11 @@ public class RoadManager : MonoBehaviour
 			go1 = (GameObject)Instantiate(RoadObjects[(int) type1], Vector3.zero, Quaternion.identity);
 			type2 = RoadType.RightToDown;
 			go2 = (GameObject)Instantiate(RoadObjects[(int) type2], Vector3.zero, Quaternion.identity);
-			DefsGame.CameraMovement.SetPosition(new Vector3(0, 6f, -10f));
+//			if (_isFirstLaunch)
+//			{
+//				_isFirstLaunch = false;
+				DefsGame.CameraMovement.SetPosition(new Vector3(0, 6f, -10f));
+//			}
 		}
 		else
 		{
@@ -85,7 +106,11 @@ public class RoadManager : MonoBehaviour
 			go1 = (GameObject)Instantiate(RoadObjects[(int) type1], Vector3.zero, Quaternion.identity);
 			type2 = RoadType.LeftToUp;
 			go2 = (GameObject)Instantiate(RoadObjects[(int) type2], Vector3.zero, Quaternion.identity);
-			DefsGame.CameraMovement.SetPosition(new Vector3(0, -6f, -10f));
+//			if (_isFirstLaunch)
+//			{
+//				_isFirstLaunch = false;
+				DefsGame.CameraMovement.SetPosition(new Vector3(0, -6f, -10f));
+//			}
 		}
 
 		_floorCounter = 0;
@@ -115,6 +140,8 @@ public class RoadManager : MonoBehaviour
 
 	// Update is called once per frame
 	void Update () {
+		if (DefsGame.CameraMovement.IsMoveToPosition) return;
+
 		if (!_isGameplay&&InputController.IsTouchOnScreen(TouchPhase.Began))
 		{
 			DefsGame.CarSimulator.Car.enabled = true;

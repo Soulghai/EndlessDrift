@@ -3,7 +3,7 @@
 public class CameraMovement : MonoBehaviour {
 	public float DampTime = 0.15f;
 	public Transform Target;
-	[HideInInspector] public bool IsMoving;
+	[HideInInspector] public bool IsMovingToTarget;
 	[HideInInspector] public bool IsMoveToPosition;
 	[HideInInspector] public Vector3 TargetPosition;
 
@@ -15,23 +15,28 @@ public class CameraMovement : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
 	{
-		if (Target&&IsMoving)
+		if (Target&&IsMovingToTarget)
 		{
 			transform.position = Vector3.Lerp(transform.position, Target.position, DampTime) + new Vector3(0.0f, 0f, -10f);
 		}else if (IsMoveToPosition)
 		{
-			transform.position = Vector3.Lerp(transform.position, TargetPosition, DampTime) + new Vector3(0.0f, 0f, -10f);
+			transform.position = Vector3.Lerp(transform.position, TargetPosition, 0.01f);
+			if (Mathf.Abs(transform.position.x - TargetPosition.x) < 0.02f)
+			{
+				transform.position = TargetPosition;
+				IsMoveToPosition = false;
+			}
 		}
 	}
 
 	public void StartMoving()
 	{
-		IsMoving = true;
+		IsMovingToTarget = true;
 	}
 
 	public void StopMoving()
 	{
-		IsMoving = false;
+		IsMovingToTarget = false;
 	}
 
 	public void SetPosition(Vector3 position)
