@@ -11,13 +11,19 @@ public class RoadManager : MonoBehaviour
 	[HideInInspector]
 	public enum RoadType
 	{
-		UpToRight, RightToDown, DownToLeft, LeftToUp,
-		BridgeUpToRight, BridgeRightToDown, BridgeDownToLeft, BridgeLeftToUp,
-		ClimbUpToRight, ClimbRightToDown, ClimbDownToLeft, ClimbLeftToUp,
-		DescentUpToRight, DescentRightToDown, DescentDownToLeft, DescentLeftToUp
+		UpToRight, RightToDown, DownToLeft, LeftToUp
+
+//		BridgeUpToRight, BridgeRightToDown, BridgeDownToLeft, BridgeLeftToUp,
+//		ClimbUpToRight, ClimbRightToDown, ClimbDownToLeft, ClimbLeftToUp,
+//		DescentUpToRight, DescentRightToDown, DescentDownToLeft, DescentLeftToUp
 	}
 
-	private int _roadTypesCount;
+	public enum BuildState
+	{
+		BuildFirstFloor, BuildSecondFloor, BuildClimbItem
+	}
+
+	private BuildState _buildState;
 
 	private bool _isGameplay;
 	private List<GameObject> _roadItems = new List<GameObject>();
@@ -30,13 +36,11 @@ public class RoadManager : MonoBehaviour
 	private const float RoadSpaceParam = 3.91f;
 
 	private bool _ignoreFirst;
-	private int _floorCounter;
 //	private bool _isFirstLaunch = true;
 
 	// Use this for initialization
 	void Start ()
 	{
-		_roadTypesCount = Enum.GetNames(typeof(RoadType)).Length;
 		CreateStartRoadItems();
 		_isGameplay = false;
 	}
@@ -84,16 +88,21 @@ public class RoadManager : MonoBehaviour
 
 	private void CreateStartRoadItems()
 	{
+		_buildState = BuildState.BuildFirstFloor;
+
 		RoadType type1;
 		RoadType type2;
 		GameObject go1;
 		GameObject go2;
+		GameObject prefab;
 		if (Random.value < 0.5f)
 		{
 			type1 = RoadType.UpToRight;
-			go1 = (GameObject)Instantiate(RoadObjects[(int) type1], Vector3.zero, Quaternion.identity);
+			prefab = GetPrefab(type1, _buildState);
+			go1 = (GameObject)Instantiate(prefab, Vector3.zero, Quaternion.identity);
 			type2 = RoadType.RightToDown;
-			go2 = (GameObject)Instantiate(RoadObjects[(int) type2], Vector3.zero, Quaternion.identity);
+			prefab = GetPrefab(type2, _buildState);
+			go2 = (GameObject)Instantiate(prefab, Vector3.zero, Quaternion.identity);
 //			if (_isFirstLaunch)
 //			{
 //				_isFirstLaunch = false;
@@ -103,17 +112,17 @@ public class RoadManager : MonoBehaviour
 		else
 		{
 			type1 = RoadType.DownToLeft;
-			go1 = (GameObject)Instantiate(RoadObjects[(int) type1], Vector3.zero, Quaternion.identity);
+			prefab = GetPrefab(type1, _buildState);
+			go1 = (GameObject)Instantiate(prefab, Vector3.zero, Quaternion.identity);
 			type2 = RoadType.LeftToUp;
-			go2 = (GameObject)Instantiate(RoadObjects[(int) type2], Vector3.zero, Quaternion.identity);
+			prefab = GetPrefab(type2, _buildState);
+			go2 = (GameObject)Instantiate(prefab, Vector3.zero, Quaternion.identity);
 //			if (_isFirstLaunch)
 //			{
 //				_isFirstLaunch = false;
 				DefsGame.CameraMovement.SetPosition(new Vector3(0, -6f, -10f));
 //			}
 		}
-
-		_floorCounter = 0;
 
 		_roadItems.Add(go1);
 		_roadItems.Add(go2);
@@ -164,9 +173,42 @@ public class RoadManager : MonoBehaviour
 
 		Vector3 position = GetNewRoadItemPosition(type, isFirstEnter);
 
-		GameObject go = (GameObject)Instantiate(RoadObjects[(int) type], position, Quaternion.identity);
+		_buildState = GetBuildState(_buildState);
+
+		GameObject prefab = GetPrefab(type, _buildState);
+
+		GameObject go = (GameObject)Instantiate(prefab, position, Quaternion.identity);
 		_lastRoadItem = go.GetComponent<RoadItem>();
+
 		_roadItems.Add(go);
+	}
+
+	private GameObject GetPrefab(RoadType type, BuildState buildState)
+	{
+		int id = (int) type + 4 * (int) buildState;
+		return RoadObjects[id];
+	}
+
+	private BuildState GetBuildState(BuildState buildState)
+	{
+		if (buildState == BuildState.BuildFirstFloor)
+		{
+			if (Random.value > 0.5f) return BuildState.BuildClimbItem;
+			return buildState;
+		}
+
+		if (buildState == BuildState.BuildSecondFloor)
+		{
+			if (Random.value > 0.5f) return BuildState.BuildClimbItem;
+			return buildState;
+		}
+
+
+		float ran = Random.value;
+		if (ran <= 0.4f) return BuildState.BuildFirstFloor;
+		if (ran <= 0.8f) return BuildState.BuildSecondFloor;
+
+		return BuildState.BuildClimbItem;
 	}
 
 	private Vector3 GetNewRoadItemPosition(RoadType type, bool isFirstEnter)
