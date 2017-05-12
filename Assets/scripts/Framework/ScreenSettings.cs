@@ -28,7 +28,7 @@ public class ScreenSettings : MonoBehaviour
 	{
 	    if (Application.isPlaying) return;
 	    SetScreenSettings();
-	    SetScreenSize();
+		if (IsChangeCameraSize) SetScreenSize();
 	}
 	#endif
 

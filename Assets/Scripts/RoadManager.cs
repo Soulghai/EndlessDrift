@@ -192,6 +192,12 @@ public class RoadManager : MonoBehaviour
 
 		_buildState = GetBuildState(_buildState);
 
+//		if (!isFirstEnter)
+//		{
+//			if (_buildState == BuildState.BuildClimbItem) _buildState = BuildState.BuildDescentItem; else
+//			if (_buildState == BuildState.BuildDescentItem) _buildState = BuildState.BuildClimbItem;
+//		}
+
 		GameObject prefab = GetPrefab(type, _buildState);
 
 		GameObject go = (GameObject)Instantiate(prefab, position, Quaternion.identity);
