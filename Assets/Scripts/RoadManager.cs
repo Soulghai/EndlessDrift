@@ -7,6 +7,7 @@ public class RoadManager : MonoBehaviour
 {
 	public static event Action OnGameplayStart;
 	public GameObject[] RoadObjects;
+	public GameObject CoinSensorObject;
 
 	[HideInInspector]
 	public enum RoadType
@@ -20,7 +21,7 @@ public class RoadManager : MonoBehaviour
 
 	public enum BuildState
 	{
-		BuildFirstFloor, BuildSecondFloor, BuildClimbItem
+		BuildFirstFloor, BuildSecondFloor, BuildClimbItem, BuildDescentItem
 	}
 
 	private BuildState _buildState;
@@ -36,11 +37,19 @@ public class RoadManager : MonoBehaviour
 	private const float RoadSpaceParam = 3.91f;
 
 	private bool _ignoreFirst;
-//	private bool _isFirstLaunch = true;
+
+	private readonly List<CoinSensor> CoinObjects = new List<CoinSensor>();
+	private int _roadCounter = 0;
 
 	// Use this for initialization
 	void Start ()
 	{
+		for (int i = 0; i < 20; i++)
+		{
+			GameObject go = (GameObject)Instantiate(CoinSensorObject, Vector3.zero, Quaternion.identity);
+			CoinObjects.Add(go.GetComponent<CoinSensor>());
+		}
+
 		CreateStartRoadItems();
 		_isGameplay = false;
 	}
@@ -84,10 +93,17 @@ public class RoadManager : MonoBehaviour
 			Destroy(roadItem);
 		}
 		_roadItems.Clear();
+
+		foreach (CoinSensor cs in CoinObjects)
+		{
+			cs.Hide(false);
+		}
 	}
 
 	private void CreateStartRoadItems()
 	{
+		Clear();
+
 		_buildState = BuildState.BuildFirstFloor;
 
 		RoadType type1;
@@ -140,10 +156,11 @@ public class RoadManager : MonoBehaviour
 
 		if (_spriteSize < 0.1f)
 		{
-			SpriteRenderer spr = _lastRoadItem.GetComponent<SpriteRenderer>();
+			SpriteRenderer spr = _lastRoadItem.GetComponentInChildren<SpriteRenderer>();
 			_spriteSize = spr.sprite.bounds.size.x;
 		}
 
+		_roadCounter = 2;
 		_ignoreFirst = true;
 	}
 
@@ -180,7 +197,37 @@ public class RoadManager : MonoBehaviour
 		GameObject go = (GameObject)Instantiate(prefab, position, Quaternion.identity);
 		_lastRoadItem = go.GetComponent<RoadItem>();
 
+		++_roadCounter;
+
+		if ((_roadCounter == 4)||(_roadCounter-4 % 8 == 0)){
+			AddCoins();
+		}
+
 		_roadItems.Add(go);
+	}
+
+	private void AddCoins()
+	{
+		float angle = 0f;
+
+		if (_lastRoadItem.Type == RoadType.RightToDown) angle = 0f; else
+		if (_lastRoadItem.Type == RoadType.DownToLeft) angle = 270f; else
+		if (_lastRoadItem.Type == RoadType.LeftToUp) angle = 180f; else
+		if (_lastRoadItem.Type == RoadType.UpToRight) angle = 90f;
+
+		float angleChangeValue = 90f/10f;
+		Vector3 position;
+		for (int i = 0; i < 10; i++)
+		{
+			angle += angleChangeValue;
+			position = _lastRoadItem.transform.position + new Vector3(
+				           6.5f*Mathf.Cos(angle*Mathf.Deg2Rad),
+				           6.5f*Mathf.Sin(angle*Mathf.Deg2Rad),
+				           transform.position.z);
+			CoinSensor cs = GetInactiveCoinSensor();
+			cs.transform.position = position;
+			cs.Show();
+		}
 	}
 
 	private GameObject GetPrefab(RoadType type, BuildState buildState)
@@ -199,16 +246,24 @@ public class RoadManager : MonoBehaviour
 
 		if (buildState == BuildState.BuildSecondFloor)
 		{
-			if (Random.value > 0.5f) return BuildState.BuildClimbItem;
+			if (Random.value > 0.5f) return BuildState.BuildDescentItem;
 			return buildState;
 		}
 
 
-		float ran = Random.value;
-		if (ran <= 0.4f) return BuildState.BuildFirstFloor;
-		if (ran <= 0.8f) return BuildState.BuildSecondFloor;
+		if (buildState == BuildState.BuildClimbItem)
+		{
+			if (Random.value > 0.8f) return BuildState.BuildSecondFloor;
+			return BuildState.BuildDescentItem;
+		}
 
-		return BuildState.BuildClimbItem;
+		if (buildState == BuildState.BuildDescentItem)
+		{
+			if (Random.value > 0.8f) return BuildState.BuildFirstFloor;
+			return BuildState.BuildClimbItem;
+		}
+
+		return buildState;
 	}
 
 	private Vector3 GetNewRoadItemPosition(RoadType type, bool isFirstEnter)
@@ -314,5 +369,18 @@ public class RoadManager : MonoBehaviour
 		}
 
 		return RoadType.RightToDown;
+	}
+
+	private CoinSensor GetInactiveCoinSensor()
+	{
+		foreach (CoinSensor cs in CoinObjects)
+		{
+			if (!cs.IsVisible) return cs;
+		}
+
+		GameObject go = (GameObject)Instantiate(CoinSensorObject, Vector3.zero, Quaternion.identity);
+		CoinSensor cs2 = go.GetComponent<CoinSensor>();
+		CoinObjects.Add(cs2);
+		return cs2;
 	}
 }

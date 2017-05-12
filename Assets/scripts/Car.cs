@@ -10,9 +10,13 @@ public class Car : MonoBehaviour
 	public ParticleSystem[] Particles;
 	private bool _isCrash;
 	private float _crashRotation;
+//	private AudioClip _sndEngine;
+	private AudioSource _sndEngine;
 
 	void Start()
 	{
+		_sndEngine = GetComponent<AudioSource>();
+//		_sndEngine = Resources.Load<AudioClip>("snd/engine");
 		foreach (ParticleSystem particle in Particles)
 		{
 			particle.Stop();
@@ -53,6 +57,8 @@ public class Car : MonoBehaviour
 		}
 
 		_isCrash = false;
+
+		_sndEngine.Play(0);
 	}
 
 	public void StartMove()
@@ -67,6 +73,7 @@ public class Car : MonoBehaviour
 	{
 		_isCrash = true;
 		_crashRotation = velocity / 3f;
+		_sndEngine.Stop();
 	}
 
 	void OnTriggerEnter2D(Collider2D other)

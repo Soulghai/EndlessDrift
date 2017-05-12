@@ -5,7 +5,7 @@
 public class ScreenSettings : MonoBehaviour
 {
 	public int FrameRate = 60;
-
+	public bool IsChangeCameraSize = true;
 	public float GameWidth = 16f;
     public float GameHeight = 9f;
 	public float GameAspect {get; private set;}
@@ -20,7 +20,7 @@ public class ScreenSettings : MonoBehaviour
 	void Awake()
 	{
 		SetScreenSettings();
-		SetScreenSize();
+		if (IsChangeCameraSize) SetScreenSize();
 	}
 		
 	#if UNITY_EDITOR

@@ -20,11 +20,11 @@ public struct Defs {
 		}
 	}
 
-	static public void MuteSounds(bool _flag) {
-		if (Mute == _flag)
+	static public void MuteSounds(bool flag) {
+		if (Mute == flag)
 			return;
 
-		Mute = _flag;
+		Mute = flag;
 
 		if (Mute) {
 			AudioListener.volume = 0f;
