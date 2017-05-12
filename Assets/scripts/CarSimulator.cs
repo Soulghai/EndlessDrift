@@ -5,7 +5,6 @@ public class CarSimulator : MonoBehaviour
 {
 	public static event Action <float> OnGameOver;
 	public static event Action <int> OnAddPoints;
-	public GameObject GoalPointObject;
 	public Car Car;
 	public float Velocity = 70f;
 	private float _acceleration = 0.01f;
@@ -53,7 +52,6 @@ public class CarSimulator : MonoBehaviour
 		Vector2 currentForwardNormal = transform.up * _radius;
 		_goalPoint = new Vector3(transform.position.x + currentForwardNormal.x,
 			transform.position.y + currentForwardNormal.y, transform.position.z);
-		GoalPointObject.transform.position = _goalPoint;
 		if (_startType == RoadManager.RoadType.UpToRight)
 		{
 			CurrVelocity = -Velocity;
@@ -124,7 +122,6 @@ public class CarSimulator : MonoBehaviour
 				Vector2 currentForwardNormal = transform.up * -_radius;
 				_goalPoint = new Vector3(transform.position.x + currentForwardNormal.x,
 					transform.position.y + currentForwardNormal.y, transform.position.z);
-				GoalPointObject.transform.position = _goalPoint;
 
 				CurrVelocity *= -1f;
 				_acceleration *= -1f;

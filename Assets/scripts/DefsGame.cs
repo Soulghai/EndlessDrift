@@ -67,7 +67,6 @@ public struct DefsGame {
 
 	static public int RateCounter 								= 0;
     public static Coins Coins { get; set; }
-    public static CoinSensor CoinSensor { get; set; }
     public static bool IsNeedToShowCoin = false;
 
     static public void LoadVariables() {

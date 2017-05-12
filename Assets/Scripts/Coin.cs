@@ -67,6 +67,10 @@ public class Coin : MonoBehaviour {
 				if (_isMoveToTarget) {
 					if (transform.localScale.x >= 1) transform.localScale = new Vector3(transform.localScale.x - 0.1f,
 						transform.localScale.y - 0.1f, 1f);
+
+					Vector3 newPos = Camera.main.ScreenToWorldPoint(DefsGame.Coins.img.transform.position);
+					_targetPos = new Vector3(newPos.x, newPos.y, transform.position.z);
+
 					float ang = Mathf.Atan2 (_targetPos.y - transform.position.y, _targetPos.x - transform.position.x);
 
 					if (_isAnglePlus) {
@@ -98,8 +102,8 @@ public class Coin : MonoBehaviour {
 
 	public void MoveToEnd()
 	{
-	    Vector3 newPos = Camera.main.ScreenToWorldPoint(DefsGame.Coins.img.transform.position);
-	    _targetPos = new Vector3(newPos.x, newPos.y, gameObject.transform.position.z);
+//	    Vector3 newPos = Camera.main.ScreenToWorldPoint(DefsGame.Coins.img.transform.position);
+//	    _targetPos = new Vector3(newPos.x, newPos.y, gameObject.transform.position.z);
 		_velocity = 0.05f + Random.value*0.05f;
 		if (Random.value < 0.5f) _moveAngle = Random.value * 180f* Mathf.Deg2Rad;
 		else _moveAngle = -Random.value * 180f* Mathf.Deg2Rad;
