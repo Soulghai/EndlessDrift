@@ -8,6 +8,7 @@ public class RoadManager : MonoBehaviour
 	public static event Action OnGameplayStart;
 	public GameObject[] RoadObjects;
 	public GameObject CoinSensorObject;
+	public RoadPictureArray Pictures;
 
 	[HideInInspector]
 	public enum RoadType
@@ -38,7 +39,7 @@ public class RoadManager : MonoBehaviour
 
 	private bool _ignoreFirst;
 
-	private readonly List<CoinSensor> CoinObjects = new List<CoinSensor>();
+	private readonly List<CoinSensor> _coinObjects = new List<CoinSensor>();
 	private int _roadCounter = 0;
 
 	// Use this for initialization
@@ -47,9 +48,11 @@ public class RoadManager : MonoBehaviour
 		for (int i = 0; i < 20; i++)
 		{
 			GameObject go = (GameObject)Instantiate(CoinSensorObject, Vector3.zero, Quaternion.identity);
-			CoinObjects.Add(go.GetComponent<CoinSensor>());
+			_coinObjects.Add(go.GetComponent<CoinSensor>());
 		}
 
+		Pictures.CreateCachedArr();
+		_spriteSize = Pictures.SpriteSize;
 		CreateStartRoadItems();
 		_isGameplay = false;
 	}
@@ -88,13 +91,18 @@ public class RoadManager : MonoBehaviour
 
 	private void Clear()
 	{
-		foreach (GameObject roadItem in _roadItems)
+		foreach (GameObject roadItemGo in _roadItems)
 		{
-			Destroy(roadItem);
+			if (roadItemGo)
+			{
+				RoadItem ri = roadItemGo.GetComponent<RoadItem>();
+				if (ri) ri.Remove();
+				Destroy(roadItemGo);
+			}
 		}
 		_roadItems.Clear();
 
-		foreach (CoinSensor cs in CoinObjects)
+		foreach (CoinSensor cs in _coinObjects)
 		{
 			cs.Hide(false);
 		}
@@ -116,14 +124,15 @@ public class RoadManager : MonoBehaviour
 			type1 = RoadType.UpToRight;
 			prefab = GetPrefab(type1, _buildState);
 			go1 = (GameObject)Instantiate(prefab, Vector3.zero, Quaternion.identity);
+
+
 			type2 = RoadType.RightToDown;
 			prefab = GetPrefab(type2, _buildState);
 			go2 = (GameObject)Instantiate(prefab, Vector3.zero, Quaternion.identity);
-//			if (_isFirstLaunch)
-//			{
-//				_isFirstLaunch = false;
-				DefsGame.CameraMovement.SetPosition(new Vector3(0, 6f, -10f));
-//			}
+			DefsGame.CameraMovement.SetPosition(new Vector3(0, 6f, -10f));
+
+			go1.GetComponent<RoadItem>().RoadPictureItem = Pictures.GetSuitablePicture(
+			type1, RoadType.LeftToUp, _buildState, Vector3.zero, true);
 		}
 		else
 		{
@@ -133,18 +142,21 @@ public class RoadManager : MonoBehaviour
 			type2 = RoadType.LeftToUp;
 			prefab = GetPrefab(type2, _buildState);
 			go2 = (GameObject)Instantiate(prefab, Vector3.zero, Quaternion.identity);
-//			if (_isFirstLaunch)
-//			{
-//				_isFirstLaunch = false;
-				DefsGame.CameraMovement.SetPosition(new Vector3(0, -6f, -10f));
-//			}
+			DefsGame.CameraMovement.SetPosition(new Vector3(0, -6f, -10f));
+
+			go1.GetComponent<RoadItem>().RoadPictureItem = Pictures.GetSuitablePicture(
+				type1, RoadType.RightToDown, _buildState, Vector3.zero, true);
 		}
+
+		go2.GetComponent<RoadItem>().RoadPictureItem = Pictures.GetSuitablePicture(
+			type2, type1, _buildState, Vector3.zero, true);
 
 		_roadItems.Add(go1);
 		_roadItems.Add(go2);
 
 		if (Random.value < 0.5f)
 		{
+
 			_firstRoadItemType = type1;
 			_lastRoadItem = go2.GetComponent<RoadItem>();
 		}
@@ -152,12 +164,6 @@ public class RoadManager : MonoBehaviour
 		{
 			_firstRoadItemType = type2;
 			_lastRoadItem = go1.GetComponent<RoadItem>();
-		}
-
-		if (_spriteSize < 0.1f)
-		{
-			SpriteRenderer spr = _lastRoadItem.GetComponentInChildren<SpriteRenderer>();
-			_spriteSize = spr.sprite.bounds.size.x;
 		}
 
 		_roadCounter = 2;
@@ -192,16 +198,15 @@ public class RoadManager : MonoBehaviour
 
 		_buildState = GetBuildState(_buildState);
 
-//		if (!isFirstEnter)
-//		{
-//			if (_buildState == BuildState.BuildClimbItem) _buildState = BuildState.BuildDescentItem; else
-//			if (_buildState == BuildState.BuildDescentItem) _buildState = BuildState.BuildClimbItem;
-//		}
+		RoadType prevType = _lastRoadItem.Type;
 
 		GameObject prefab = GetPrefab(type, _buildState);
 
 		GameObject go = (GameObject)Instantiate(prefab, position, Quaternion.identity);
 		_lastRoadItem = go.GetComponent<RoadItem>();
+
+
+		_lastRoadItem.RoadPictureItem = Pictures.GetSuitablePicture(type, prevType, _buildState, position, isFirstEnter);
 
 		++_roadCounter;
 
@@ -379,14 +384,14 @@ public class RoadManager : MonoBehaviour
 
 	private CoinSensor GetInactiveCoinSensor()
 	{
-		foreach (CoinSensor cs in CoinObjects)
+		foreach (CoinSensor cs in _coinObjects)
 		{
 			if (!cs.IsVisible) return cs;
 		}
 
 		GameObject go = (GameObject)Instantiate(CoinSensorObject, Vector3.zero, Quaternion.identity);
 		CoinSensor cs2 = go.GetComponent<CoinSensor>();
-		CoinObjects.Add(cs2);
+		_coinObjects.Add(cs2);
 		return cs2;
 	}
 }
