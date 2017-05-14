@@ -29,6 +29,10 @@ public class RoadPictureArray : MonoBehaviour
 			newGo = (GameObject) Instantiate(Prefabs[i], Vector3.zero, Quaternion.identity);
 			newGo.SetActive(false);
 			_cachedObjects.Add(newGo);
+
+			newGo = (GameObject) Instantiate(Prefabs[i], Vector3.zero, Quaternion.identity);
+			newGo.SetActive(false);
+			_cachedObjects.Add(newGo);
 		}
 
 		SpriteRenderer spr = _cachedObjects[0].GetComponent<SpriteRenderer>();

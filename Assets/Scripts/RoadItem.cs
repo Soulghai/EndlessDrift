@@ -15,8 +15,7 @@ public class RoadItem : MonoBehaviour
 		++_edgeLineCollideCounter;
 		if (_edgeLineCollideCounter >= 2)
 		{
-			Invoke ("Remove", 2f);
-			Destroy(gameObject, 2f);
+			Invoke ("Remove", 3.0f);
 		}
 		return _edgeLineCollideCounter;
 	}
@@ -24,5 +23,6 @@ public class RoadItem : MonoBehaviour
 	public void Remove()
 	{
 		if (RoadPictureItem) RoadPictureItem.gameObject.SetActive(false);
+		Destroy(gameObject);
 	}
 }

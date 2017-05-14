@@ -14,7 +14,7 @@ public class Coin : MonoBehaviour {
     private bool _isShowAnimation;
     private bool _isHideAnimation;
     private bool _isMoveToTarget = false;
-    private const float VelocityMax = 0.4f;
+    private const float VelocityMax = 0.45f;
 
 	public void Show() {
 		_isShowAnimation = true;
@@ -71,11 +71,11 @@ public class Coin : MonoBehaviour {
 
 					if (Mathf.Abs(_moveAngle - ang) < _addAngleCoeff*1.5f* Mathf.Deg2Rad) _moveAngle = ang;
 
-					if (_velocity < VelocityMax) _velocity += 0.007f;
+					if (_velocity < VelocityMax) _velocity += 0.008f;
 					transform.position = new Vector3(transform.position.x + _velocity * Mathf.Cos(_moveAngle),
 						transform.position.y + _velocity * Mathf.Sin(_moveAngle), 1f);
 
-					if (Vector2.Distance(transform.position, _targetPos) <= 0.2f) {
+					if (Vector2.Distance(transform.position, _targetPos) <= 0.45f) {
 						_isMoveToTarget = false;
 
 						GameEvents.Send(OnAddCoinsVisual, 1);

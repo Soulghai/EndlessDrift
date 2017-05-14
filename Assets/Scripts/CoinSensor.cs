@@ -11,7 +11,7 @@ public class CoinSensor : MonoBehaviour
     private Collider2D _collider;
     private GameObject _target;
 
-	public float LifeDelay = 3f;
+	public float LifeDelay = 4.0f;
 	private float _lifeTime;
 
 	private AudioClip _sndTakeCoin;

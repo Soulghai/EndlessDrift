@@ -32,7 +32,7 @@ public class ScreenSkins : MonoBehaviour {
 		if (DefsGame.faceAvailable [_id] == 1) {
 			DefsGame.currentFaceID = _id;
 			PlayerPrefs.SetInt ("currentFaceID", DefsGame.currentFaceID);
-//		    DefsGame.Ball.SetNewSkin (_id);
+		    DefsGame.CarSimulator.Car.SetNewSkin (_id);
 
 		} else if (DefsGame.coinsCount >= DefsGame.facePrice [_id-1]) {
 			GameEvents.Send(OnAddCoinsVisual, -DefsGame.facePrice [_id-1]);
@@ -40,7 +40,7 @@ public class ScreenSkins : MonoBehaviour {
 			DefsGame.currentFaceID = _id;
 			PlayerPrefs.SetInt ("currentFaceID", DefsGame.currentFaceID);
 			PlayerPrefs.SetInt ("faceAvailable_" + _id.ToString (), 1);
-//			DefsGame.Ball.SetNewSkin (_id);
+			DefsGame.CarSimulator.Car.SetNewSkin (_id);
 
 			++DefsGame.QUEST_CHARACTERS_Counter;
 			PlayerPrefs.SetInt ("QUEST_CHARACTERS_Counter", DefsGame.QUEST_CHARACTERS_Counter);

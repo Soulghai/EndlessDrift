@@ -40,7 +40,7 @@ public class ScreenColorAnimation : MonoBehaviour {
 		if (_isHideAnimation)
 		{
 			_timeHide += Time.deltaTime;
-			if (_timeHide > 0.5f)
+			if (_timeHide > 0.6f)
 			{
 
 				Color color = _spr.color;

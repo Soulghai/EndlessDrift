@@ -12,6 +12,10 @@ public class Car : MonoBehaviour
 	private float _crashRotation;
 //	private AudioClip _sndEngine;
 	private AudioSource _sndEngine;
+	private AudioClip _sndRotate;
+
+	private SpriteRenderer _spriteRenderer;
+//	private bool _isHideAnimation;
 
 	void Start()
 	{
@@ -21,12 +25,39 @@ public class Car : MonoBehaviour
 		{
 			particle.Stop();
 		}
-		enabled = false;
+		_spriteRenderer = GetComponent<SpriteRenderer>();
+		SetNewSkin(DefsGame.currentFaceID);
+		gameObject.SetActive(false);
+	}
+
+	public void SetNewSkin(int id) {
+		LoadSprites (DefsGame.currentFaceID);
+	}
+
+	private void LoadSprites(int id){
+		//if ((Sprite)_sprite) Resources.UnloadAsset(_sprite);
+		_spriteRenderer.sprite = Resources.Load<Sprite>("gfx/Cars/car" +(id+1).ToString());
 	}
 
 	// Update is called once per frame
 	void Update ()
 	{
+//		if (_isHideAnimation)
+//		{
+//			if (transform.localScale.x > 0)
+//			{
+//				transform.localScale = new Vector3(transform.localScale.x - 0.1f, transform.localScale.y - 0.1f, 1f);
+//			}
+//			else
+//			{
+//				_isHideAnimation = false;
+//				IsActive = false;
+//			}
+//
+//			return;
+//		}
+
+
 		transform.position = CarSimulator.transform.position;
 		if (_isCrash)
 		{
@@ -38,7 +69,8 @@ public class Car : MonoBehaviour
 			}
 			else
 			{
-				enabled = false;
+//				_isHideAnimation = true;
+				gameObject.SetActive(false);
 			}
 		}
 		else
@@ -49,6 +81,7 @@ public class Car : MonoBehaviour
 
 	public void Respown()
 	{
+//		_isHideAnimation = false;
 		transform.position = CarSimulator.transform.position;
 		transform.rotation = CarSimulator.transform.rotation;
 		foreach (ParticleSystem particle in Particles)

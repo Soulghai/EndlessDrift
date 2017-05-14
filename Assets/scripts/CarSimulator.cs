@@ -6,8 +6,8 @@ public class CarSimulator : MonoBehaviour
 	public static event Action <float> OnGameOver;
 	public static event Action <int> OnAddPoints;
 	public Car Car;
-	public float Velocity = 70f;
-	private float _acceleration = 0.01f;
+	public float Velocity = 72f;
+	private float _acceleration;
 	[HideInInspector] public float CurrVelocity;
 	private float _radius = 6f;
 	private Vector3 _goalPoint;
@@ -20,12 +20,14 @@ public class CarSimulator : MonoBehaviour
 	private float _accToAddPoints;
 	private float _speedToAddPoints;
 	private float _pointsValue;
+	private AudioClip _sndRotate;
 
 	// Use this for initialization
 
 	void Awake()
 	{
 		DefsGame.CarSimulator = this;
+		_sndRotate = Resources.Load<AudioClip>("snd/char_next");
 	}
 
 	void OnEnable() {
@@ -55,25 +57,21 @@ public class CarSimulator : MonoBehaviour
 		if (_startType == RoadManager.RoadType.UpToRight)
 		{
 			CurrVelocity = -Velocity;
-			_acceleration = -0.01f;
 			transform.RotateAround(_goalPoint, Vector3.forward, -80f);
 		}
 		else if (_startType == RoadManager.RoadType.RightToDown)
 		{
 			CurrVelocity = Velocity;
-			_acceleration = 0.01f;
 			transform.RotateAround(_goalPoint, Vector3.forward, 80f);
 		}
 		else if (_startType == RoadManager.RoadType.DownToLeft)
 		{
 			CurrVelocity = -Velocity;
-			_acceleration = -0.01f;
 			transform.RotateAround(_goalPoint, Vector3.forward, 100f);
 		}
 		else if (_startType == RoadManager.RoadType.LeftToUp)
 		{
 			CurrVelocity = Velocity;
-			_acceleration = 0.01f;
 			transform.RotateAround(_goalPoint, Vector3.forward, -100f);
 		}
 
@@ -93,9 +91,9 @@ public class CarSimulator : MonoBehaviour
 
 		if (_isCrash)
 		{
-			if (CurrVelocity > 1f) CurrVelocity -= 1.9f;
+			if (CurrVelocity > 1f) CurrVelocity -= 1.8f;
 			else
-			if (CurrVelocity < -1f) CurrVelocity += 1.9f;
+			if (CurrVelocity < -1f) CurrVelocity += 1.8f;
 			else
 			{
 				Stop();
@@ -106,6 +104,31 @@ public class CarSimulator : MonoBehaviour
 		}
 		else if (_isMoving)
 		{
+
+			bool accIsChanged = false;
+			if (DefsGame.currentPointsCount < 30)
+			{
+				_acceleration = 0.03f;
+				accIsChanged = true;
+			} else if (DefsGame.currentPointsCount < 50)
+			{
+				_acceleration = 0.015f;
+				accIsChanged = true;
+			} else if (DefsGame.currentPointsCount < 100)
+			{
+				_acceleration = 0.01f;
+				accIsChanged = true;
+			} else if (DefsGame.currentPointsCount < 200)
+			{
+				_acceleration = 0.005f;
+				accIsChanged = true;
+			}
+			if (accIsChanged)
+				if (CurrVelocity < 0f)
+				{
+					_acceleration *= -1;
+				}
+
 			CurrVelocity += _acceleration;
 			_speedToAddPoints += _accToAddPoints;
 			_pointsValue += _speedToAddPoints;
@@ -129,6 +152,7 @@ public class CarSimulator : MonoBehaviour
 				//Body.transform.DORotate(Vector3.forward*180f, 1f);
 				transform.Rotate(Vector3.forward, 180f);
 				//Car.Rotate(new Vector3(0f, 0f, transform.rotation.z));
+				Defs.PlaySound(_sndRotate, 4f);
 			}
 		}
 	}

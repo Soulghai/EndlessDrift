@@ -35,7 +35,7 @@ public class RoadManager : MonoBehaviour
 
 	private RoadType _firstRoadItemType;
 
-	private const float RoadSpaceParam = 3.91f;
+	private const float RoadSpaceParam = 13.64f;
 
 	private bool _ignoreFirst;
 
@@ -97,7 +97,6 @@ public class RoadManager : MonoBehaviour
 			{
 				RoadItem ri = roadItemGo.GetComponent<RoadItem>();
 				if (ri) ri.Remove();
-				Destroy(roadItemGo);
 			}
 		}
 		_roadItems.Clear();
@@ -174,9 +173,10 @@ public class RoadManager : MonoBehaviour
 	void Update () {
 		if (DefsGame.CameraMovement.IsMoveToPosition) return;
 
+		if ((DefsGame.CurrentScreen == DefsGame.SCREEN_GAME)||(DefsGame.CurrentScreen == DefsGame.SCREEN_MENU))
 		if (!_isGameplay&&InputController.IsTouchOnScreen(TouchPhase.Began))
 		{
-			DefsGame.CarSimulator.Car.enabled = true;
+			DefsGame.CarSimulator.Car.gameObject.SetActive(true);
 			DefsGame.CarSimulator.SetStartRoadType(_firstRoadItemType);
 			DefsGame.CarSimulator.Respown();
 			DefsGame.CarSimulator.StartMove();
@@ -285,22 +285,22 @@ public class RoadManager : MonoBehaviour
 			if ((type == RoadType.UpToRight)&&(_lastRoadItem.Type == RoadType.DownToLeft))
 			{
 				position = _lastRoadItem.transform.position + new Vector3(
-					           0f, - _spriteSize - RoadSpaceParam, 0f);
+					           0f, - RoadSpaceParam, 0f);
 			}
 			else if ((type == RoadType.RightToDown)&&(_lastRoadItem.Type == RoadType.LeftToUp))
 			{
 				position = _lastRoadItem.transform.position + new Vector3(
-					           -_spriteSize - RoadSpaceParam, 0f, 0f);
+					           - RoadSpaceParam, 0f, 0f);
 			}
 			else if ((type == RoadType.DownToLeft)&&(_lastRoadItem.Type == RoadType.UpToRight))
 			{
 				position = _lastRoadItem.transform.position + new Vector3(
-					           0f, _spriteSize + RoadSpaceParam, 0f);
+					           0f, RoadSpaceParam, 0f);
 			}
 			else if ((type == RoadType.LeftToUp)&&(_lastRoadItem.Type == RoadType.RightToDown))
 			{
 				position = _lastRoadItem.transform.position + new Vector3(
-					           _spriteSize + RoadSpaceParam, 0f, 0f);
+					           RoadSpaceParam, 0f, 0f);
 			}
 		}
 		else
@@ -308,22 +308,22 @@ public class RoadManager : MonoBehaviour
 			if ((type == RoadType.UpToRight)&&(_lastRoadItem.Type == RoadType.DownToLeft))
 			{
 				position = _lastRoadItem.transform.position + new Vector3(
-					           _spriteSize + RoadSpaceParam, 0f, 0f);
+					           RoadSpaceParam, 0f, 0f);
 			}
 			else if ((type == RoadType.RightToDown)&&(_lastRoadItem.Type == RoadType.LeftToUp))
 			{
 				position = _lastRoadItem.transform.position + new Vector3(
-					           0f, -_spriteSize - RoadSpaceParam, 0f);
+					           0f, - RoadSpaceParam, 0f);
 			}
 			else if ((type == RoadType.DownToLeft)&&(_lastRoadItem.Type == RoadType.UpToRight))
 			{
 				position = _lastRoadItem.transform.position + new Vector3(
-					           -_spriteSize - RoadSpaceParam, 0f, 0f);
+					            - RoadSpaceParam, 0f, 0f);
 			}
 			else if ((type == RoadType.LeftToUp)&&(_lastRoadItem.Type == RoadType.RightToDown))
 			{
 				position = _lastRoadItem.transform.position + new Vector3(
-					           0f, _spriteSize + RoadSpaceParam, 0f);
+					           0f, RoadSpaceParam, 0f);
 			}
 		}
 		return position;
