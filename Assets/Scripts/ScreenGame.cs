@@ -4,6 +4,8 @@ using Random = UnityEngine.Random;
 using DoozyUI;
 
 public class ScreenGame : MonoBehaviour {
+	public static event Action OnNewGame;
+
 	public GameObject screenAnimationObject;
 
     private ScreenColorAnimation _screenAnimation;
@@ -24,7 +26,7 @@ public class ScreenGame : MonoBehaviour {
     private int _state = -1;
     private float _missDelay = 0f;
 	[HideInInspector] public bool IsGameOver = false;
-    private Vector3 _cameraStartPos;
+//    private Vector3 _cameraStartPos;
 
 	public static event Action OnShowMenu;
 	//int hintCounter;
@@ -102,7 +104,7 @@ public class ScreenGame : MonoBehaviour {
 
 		_isReviveUsed = false;
 
-
+		GameEvents.Send(OnNewGame);
 	}
 
     private void OnEnable() {
@@ -129,14 +131,13 @@ public class ScreenGame : MonoBehaviour {
 //		_poinsBmScript.AddPoints (pointsCount);
 	}
 
-	void OnCrash (float delay)
+	void OnCrash ()
 	{
 		if (IsGameOver)
 			return;
 
 		Defs.PlaySound (_sndLose);
 
-		_missDelay = delay;
 		if (DefsGame.IS_ACHIEVEMENT_MISS_CLICK == 0) {
 			++DefsGame.QUEST_MISS_Counter;
 			PlayerPrefs.SetInt ("QUEST_MISS_Counter", DefsGame.QUEST_MISS_Counter);
@@ -265,7 +266,7 @@ public class ScreenGame : MonoBehaviour {
 	                _screenAnimation.SetAutoHide(true);
 
 	                _state = 4;
-		            _cameraStartPos = Camera.main.transform.position;
+//		            _cameraStartPos = Camera.main.transform.position;
 	            }
 	            break;
 	        case 4:
@@ -299,9 +300,9 @@ public class ScreenGame : MonoBehaviour {
 	            GameEvents.Send(OnShowMenu);
 	            DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
 
-
-
-	            _state = 7;
+		        Init();
+		        _state = 1;
+//	            _state = 7;
 	            break;
 	        case 7:
 	            _time += Time.deltaTime;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CarSimulator : MonoBehaviour
 {
-	public static event Action <float> OnGameOver;
+	public static event Action OnGameOver;
 	public static event Action <int> OnAddPoints;
 	public Car Car;
 	public float Velocity = 72f;
@@ -21,6 +21,7 @@ public class CarSimulator : MonoBehaviour
 	private float _speedToAddPoints;
 	private float _pointsValue;
 	private AudioClip _sndRotate;
+	private AudioClip _sndOut;
 
 	// Use this for initialization
 
@@ -28,6 +29,7 @@ public class CarSimulator : MonoBehaviour
 	{
 		DefsGame.CarSimulator = this;
 		_sndRotate = Resources.Load<AudioClip>("snd/char_next");
+		_sndOut = Resources.Load<AudioClip>("snd/CarOut");
 	}
 
 	void OnEnable() {
@@ -91,15 +93,15 @@ public class CarSimulator : MonoBehaviour
 
 		if (_isCrash)
 		{
-			if (CurrVelocity > 1f) CurrVelocity -= 1.8f;
+			if (CurrVelocity > 1f) CurrVelocity -= 1.7f;
 			else
-			if (CurrVelocity < -1f) CurrVelocity += 1.8f;
+			if (CurrVelocity < -1f) CurrVelocity += 1.7f;
 			else
 			{
 				Stop();
 				//Invoke("Respown", 0.5f);
 
-				GameEvents.Send(OnGameOver, 0f);
+				GameEvents.Send(OnGameOver);
 			}
 		}
 		else if (_isMoving)
@@ -173,6 +175,7 @@ public class CarSimulator : MonoBehaviour
 	public void Crash(float delay)
 	{
 		_isCrash = true;
+		Defs.PlaySound(_sndOut);
 	}
 
 //	var point : Vector3;

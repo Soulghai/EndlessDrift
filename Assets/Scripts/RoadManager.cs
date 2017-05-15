@@ -31,7 +31,6 @@ public class RoadManager : MonoBehaviour
 	private List<GameObject> _roadItems = new List<GameObject>();
 
 	private RoadItem _lastRoadItem;
-	private float _spriteSize;
 
 	private RoadType _firstRoadItemType;
 
@@ -52,40 +51,33 @@ public class RoadManager : MonoBehaviour
 		}
 
 		Pictures.CreateCachedArr();
-		_spriteSize = Pictures.SpriteSize;
 		CreateStartRoadItems();
 		_isGameplay = false;
 	}
 
 	void OnEnable() {
 		CarSimulator.OnGameOver += Respown;
+		ScreenGame.OnNewGame += NewGame;
 		Car.OnAddRoadItem += OnAddRoadItem;
 	}
 	void OnDisable() {
 		CarSimulator.OnGameOver -= Respown;
+		ScreenGame.OnNewGame -= NewGame;
 		Car.OnAddRoadItem -= OnAddRoadItem;
 	}
 
-	private void Respown(float delay)
+	private void Respown()
 	{
-		Invoke("RespownWithDelay", 0.3f);
-
-//		DefsGame.CameraMovement.IsMovingToTarget = false;
-//		DefsGame.CameraMovement.IsMoveToPosition = true;
-//		if (_firstRoadItemType == RoadType.UpToRight)
-//		{
-//			DefsGame.CameraMovement.TargetPosition = new Vector3(0, 6f, -10f);
-//		}
-//		else
-//		{
-//			DefsGame.CameraMovement.TargetPosition = new Vector3(0, -6f, -10f);
-//		}
+		Invoke("RespownWithDelay", 0.1f);
 	}
 
-	private void RespownWithDelay()
-	{
+	private void RespownWithDelay() {
 		Clear();
 		CreateStartRoadItems();
+	}
+
+	private void NewGame()
+	{
 		_isGameplay = false;
 	}
 
@@ -118,22 +110,24 @@ public class RoadManager : MonoBehaviour
 		GameObject go1;
 		GameObject go2;
 		GameObject prefab;
-		if (Random.value < 0.5f)
+		RoadItem roadItem1;
+		RoadItem roadItem2;
+		float ran = Random.value;
+		if (ran < 0.5f)
 		{
 			type1 = RoadType.UpToRight;
 			prefab = GetPrefab(type1, _buildState);
 			go1 = (GameObject)Instantiate(prefab, Vector3.zero, Quaternion.identity);
-
-
 			type2 = RoadType.RightToDown;
 			prefab = GetPrefab(type2, _buildState);
 			go2 = (GameObject)Instantiate(prefab, Vector3.zero, Quaternion.identity);
 			DefsGame.CameraMovement.SetPosition(new Vector3(0, 6f, -10f));
 
-			go1.GetComponent<RoadItem>().RoadPictureItem = Pictures.GetSuitablePicture(
-			type1, RoadType.LeftToUp, _buildState, Vector3.zero, true);
-		}
-		else
+			roadItem1 = go1.GetComponent<RoadItem>();
+			roadItem1.SetRoadPicture(Pictures.GetSuitablePicture(
+			type1, RoadType.LeftToUp, _buildState, Vector3.zero, true));
+//			roadItem1.RoadPictureItem.RoadItem = roadItem1;
+		} else
 		{
 			type1 = RoadType.DownToLeft;
 			prefab = GetPrefab(type1, _buildState);
@@ -143,12 +137,28 @@ public class RoadManager : MonoBehaviour
 			go2 = (GameObject)Instantiate(prefab, Vector3.zero, Quaternion.identity);
 			DefsGame.CameraMovement.SetPosition(new Vector3(0, -6f, -10f));
 
-			go1.GetComponent<RoadItem>().RoadPictureItem = Pictures.GetSuitablePicture(
-				type1, RoadType.RightToDown, _buildState, Vector3.zero, true);
+			roadItem1 = go1.GetComponent<RoadItem>();
+			roadItem1.SetRoadPicture(Pictures.GetSuitablePicture(
+				type1, RoadType.RightToDown, _buildState, Vector3.zero, true));
+//			roadItem1.RoadPictureItem.RoadItem = roadItem1;
 		}
-
-		go2.GetComponent<RoadItem>().RoadPictureItem = Pictures.GetSuitablePicture(
-			type2, type1, _buildState, Vector3.zero, true);
+//		else
+//		{
+//			type1 = RoadType.RightToDown;
+//			prefab = GetPrefab(type1, _buildState);
+//			go1 = (GameObject)Instantiate(prefab, Vector3.zero, Quaternion.identity);
+//			type2 = RoadType.DownToLeft;
+//			prefab = GetPrefab(type2, _buildState);
+//			go2 = (GameObject)Instantiate(prefab, Vector3.zero, Quaternion.identity);
+//			DefsGame.CameraMovement.SetPosition(new Vector3(9f, 0f, -10f));
+//
+//			go1.GetComponent<RoadItem>().RoadPictureItem = Pictures.GetSuitablePicture(
+//				type1, RoadType.RightToDown, _buildState, Vector3.zero, true);
+//		}
+		roadItem2 = go2.GetComponent<RoadItem>();
+		roadItem2.SetRoadPicture(Pictures.GetSuitablePicture(
+			type2, type1, _buildState, Vector3.zero, true));
+//		roadItem2.RoadPictureItem.RoadItem = roadItem2;
 
 		_roadItems.Add(go1);
 		_roadItems.Add(go2);
@@ -171,9 +181,7 @@ public class RoadManager : MonoBehaviour
 
 	// Update is called once per frame
 	void Update () {
-		if (DefsGame.CameraMovement.IsMoveToPosition) return;
-
-		if ((DefsGame.CurrentScreen == DefsGame.SCREEN_GAME)||(DefsGame.CurrentScreen == DefsGame.SCREEN_MENU))
+		if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)
 		if (!_isGameplay&&InputController.IsTouchOnScreen(TouchPhase.Began))
 		{
 			DefsGame.CarSimulator.Car.gameObject.SetActive(true);
@@ -205,8 +213,8 @@ public class RoadManager : MonoBehaviour
 		GameObject go = (GameObject)Instantiate(prefab, position, Quaternion.identity);
 		_lastRoadItem = go.GetComponent<RoadItem>();
 
-
-		_lastRoadItem.RoadPictureItem = Pictures.GetSuitablePicture(type, prevType, _buildState, position, isFirstEnter);
+		_lastRoadItem.SetRoadPicture(Pictures.GetSuitablePicture(type, prevType, _buildState, position, isFirstEnter));
+//		_lastRoadItem.RoadPictureItem.RoadItem = _lastRoadItem;
 
 		++_roadCounter;
 
@@ -228,16 +236,17 @@ public class RoadManager : MonoBehaviour
 
 		float angleChangeValue = 90f/10f;
 		Vector3 position;
-		for (int i = 0; i < 10; i++)
+		CoinSensor cs;
+		for (int i = 10; i > 0; i--)
 		{
 			angle += angleChangeValue;
 			position = _lastRoadItem.transform.position + new Vector3(
 				           6.5f*Mathf.Cos(angle*Mathf.Deg2Rad),
 				           6.5f*Mathf.Sin(angle*Mathf.Deg2Rad),
 				           transform.position.z);
-			CoinSensor cs = GetInactiveCoinSensor();
+			cs = GetInactiveCoinSensor();
 			cs.transform.position = position;
-			cs.Show();
+			cs.Show(3.0f);
 		}
 	}
 

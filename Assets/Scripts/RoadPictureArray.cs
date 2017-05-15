@@ -5,19 +5,14 @@ public class RoadPictureArray : MonoBehaviour
 {
 
 	public GameObject[] Prefabs;
-	[HideInInspector] public float SpriteSize;
 
 	private readonly List<GameObject> _cachedObjects = new List<GameObject>();
 
 	public void CreateCachedArr()
 	{
 		GameObject newGo;
-		for (int i = 0; i < Prefabs.Length; i++)
+		for (int i = 0; i < 2; i++)
 		{
-			newGo = (GameObject) Instantiate(Prefabs[i], Vector3.zero, Quaternion.identity);
-			newGo.SetActive(false);
-			_cachedObjects.Add(newGo);
-
 			newGo = (GameObject) Instantiate(Prefabs[i], Vector3.zero, Quaternion.identity);
 			newGo.SetActive(false);
 			_cachedObjects.Add(newGo);
@@ -35,32 +30,51 @@ public class RoadPictureArray : MonoBehaviour
 			_cachedObjects.Add(newGo);
 		}
 
-		SpriteRenderer spr = _cachedObjects[0].GetComponent<SpriteRenderer>();
-		SpriteSize = spr.sprite.bounds.size.x;
+		for (int i = 2; i < Prefabs.Length; i++)
+		{
+			newGo = (GameObject) Instantiate(Prefabs[i], Vector3.zero, Quaternion.identity);
+			newGo.SetActive(false);
+			_cachedObjects.Add(newGo);
+
+			newGo = (GameObject) Instantiate(Prefabs[i], Vector3.zero, Quaternion.identity);
+			newGo.SetActive(false);
+			_cachedObjects.Add(newGo);
+		}
 	}
 
 	public RoadPictureItem GetSuitablePicture(RoadManager.RoadType type, RoadManager.RoadType prevType, RoadManager.BuildState buildState, Vector3 position, bool isRightDirection)
 	{
 		RoadPictureItem rpi = GetCachedObject(buildState, isRightDirection, type, prevType);
+		if (rpi == null) rpi = GetCachedObject(buildState, isRightDirection, type, prevType, true);
 		rpi.transform.position = position;
 		RotateByType(rpi, type);
 		return rpi;
 	}
 
-	private RoadPictureItem GetCachedObject(RoadManager.BuildState buildState, bool isRightDirection, RoadManager.RoadType type, RoadManager.RoadType prevType)
+	private RoadPictureItem GetCachedObject(RoadManager.BuildState buildState, bool isRightDirection, RoadManager.RoadType type, RoadManager.RoadType prevType, bool isCreate = false)
 	{
+		GameObject foundedGo = null;
+		RoadPictureItem rpi;
 		foreach (GameObject go in _cachedObjects)
 		{
-			if (!go.activeSelf)
+			if ((!go.activeSelf)||(isCreate))
 			{
-				RoadPictureItem rpi = go.GetComponent<RoadPictureItem>();
+				rpi = go.GetComponent<RoadPictureItem>();
 				if ((buildState == RoadManager.BuildState.BuildFirstFloor) ||
 				    (buildState == RoadManager.BuildState.BuildSecondFloor))
 				{
 					if (rpi.BuildState == buildState)
 					{
-						go.SetActive (true);
-						return rpi;
+						if (!go.activeSelf)
+						{
+							foundedGo = go;
+							break;
+						}
+						else
+						{
+							foundedGo = CreateNewPicture(go);
+							break;
+						}
 					}
 				}
 				else
@@ -80,23 +94,54 @@ public class RoadPictureArray : MonoBehaviour
 						{
 							if (rpi.BuildState == buildState)
 							{
-								go.SetActive(true);
-								return rpi;
+								if (!go.activeSelf)
+								{
+									foundedGo = go;
+									break;
+								}
+								else
+								{
+									foundedGo = CreateNewPicture(go);
+									break;
+								}
 							}
 						}
 						else
 						{
 							if (rpi.BuildState != buildState)
 							{
-								go.SetActive(true);
-								return rpi;
+								if (!go.activeSelf)
+								{
+									foundedGo = go;
+									break;
+								}
+								else
+								{
+									foundedGo = CreateNewPicture(go);
+									break;
+								}
 							}
 						}
 				}
 			}
 		}
 
+		if (foundedGo)
+		{
+			foundedGo.SetActive(true);
+			rpi = foundedGo.GetComponent<RoadPictureItem>();
+			return rpi;
+		}
+
 		return null;
+	}
+
+	private GameObject CreateNewPicture(GameObject go)
+	{
+		GameObject newGo = (GameObject) Instantiate(go, Vector3.zero, Quaternion.identity);
+		newGo.SetActive(false);
+		_cachedObjects.Add(newGo);
+		return newGo;
 	}
 
 	private void RotateByType(RoadPictureItem rpi, RoadManager.RoadType type)

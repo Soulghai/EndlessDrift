@@ -8,9 +8,6 @@ public class BestScore : MonoBehaviour {
     private int _pointsCount = 0;
     private float _startScale;
 
-    private bool _isPointAdded;
-    private float _time = 0f;
-    private const float Delay = 0.5f;
     private bool _isShowAnimation = true;
     private bool _isHideAnimation = false;
     private AudioClip _sndNewHighScore;
@@ -63,21 +60,12 @@ public class BestScore : MonoBehaviour {
 			img.color = new Color(img.color.r, img.color.g, img.color.b, color.a);
 		}
 
-		if (_isPointAdded) {
-			_time += Time.deltaTime;
-			if (_time > Delay) {
-				_time = 0f;
-				_isPointAdded = false;
-				MakeAnimation ();
-			}
-		}
-
 		if (img.transform.localScale.x > _startScale) {
 			img.transform.localScale = new Vector3 (img.transform.localScale.x - 2.0f*Time.deltaTime, img.transform.localScale.y - 2.0f*Time.deltaTime, 1f);
 		}
 	}
 
-	void MakeAnimation() {
+	private void MakeAnimation() {
 		_pointsCount = DefsGame.gameBestScore;
 		textField.text = _pointsCount.ToString ();
 		img.transform.localScale = new Vector3 (_startScale * 1.4f, _startScale * 1.4f, 1f);
@@ -88,7 +76,7 @@ public class BestScore : MonoBehaviour {
 	public void UpdateVisual() {
 		// Здесь только визуальная обработка. Изменение BestScore в Points
 		if (DefsGame.gameBestScore > _pointsCount) {
-			_isPointAdded = true;
+			MakeAnimation ();
 		}
 	}
 }

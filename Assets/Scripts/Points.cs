@@ -3,24 +3,23 @@ using UnityEngine.UI;
 
 public class Points : MonoBehaviour {
 	public Text textField;
-	bool isShowAnimation = false;
-	float startScale;
-
-	bool isPointAdded;
-	float time = 0f;
-	const float delay = 0.8f;
+	private bool _isShowAnimation = false;
+	private float _startScale;
+	private bool _isPointAdded;
+	private float _time = 0f;
+	private const float Delay = 0.8f;
 
 	// Use this for initialization
 	void Start () {
 		textField.text = "0";
-		Color _color = textField.color;
-		_color.a = 0f;
-		textField.color = _color;
-		startScale = textField.transform.localScale.x;
+		Color color = textField.color;
+		color.a = 0f;
+		textField.color = color;
+		_startScale = textField.transform.localScale.x;
 	}
 
 	public void ShowAnimation() {
-		isShowAnimation = true;
+		_isShowAnimation = true;
 	}
 
 	public void ResetCounter() {
@@ -30,27 +29,27 @@ public class Points : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (isShowAnimation) {
-			Color _color = textField.color;
+		if (_isShowAnimation) {
+			Color color = textField.color;
 			if (textField.color.a < 1f) {
-				_color.a += 0.1f;
+				color.a += 0.1f;
 			} else {
-				isShowAnimation = false;
-				_color.a = 1f;
+				_isShowAnimation = false;
+				color.a = 1f;
 			}
-			textField.color = _color;
+			textField.color = color;
 		}
 
-		if (isPointAdded) {
-			time += Time.deltaTime;
-			if (time > delay) {
-				time = 0f;
-				isPointAdded = false;
+		if (_isPointAdded) {
+			_time += Time.deltaTime;
+			if (_time > Delay) {
+				_time = 0f;
+				_isPointAdded = false;
 				AddPointVisual ();
 			}
 		}
 
-		if (textField.transform.localScale.x > startScale) {
+		if (textField.transform.localScale.x > _startScale) {
 			textField.transform.localScale = new Vector3 (textField.transform.localScale.x - 2.5f*Time.deltaTime, textField.transform.localScale.y - 2.5f*Time.deltaTime, 1f);
 		}
 	}
@@ -61,13 +60,13 @@ public class Points : MonoBehaviour {
 		if (DefsGame.gameBestScore < DefsGame.currentPointsCount) {
 			DefsGame.gameBestScore = DefsGame.currentPointsCount;
 		}
-		isPointAdded = true;
+		_isPointAdded = true;
 	}
 
 	void AddPointVisual()
 	{
 		textField.text = DefsGame.currentPointsCount.ToString ();
-		textField.transform.localScale = new Vector3 (startScale*1.4f, startScale*1.4f, 1f);
+		textField.transform.localScale = new Vector3 (_startScale*1.4f, _startScale*1.4f, 1f);
 	}
 
 	public void UpdateVisual() {

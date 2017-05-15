@@ -11,7 +11,7 @@ public class CoinSensor : MonoBehaviour
     private Collider2D _collider;
     private GameObject _target;
 
-	public float LifeDelay = 4.0f;
+	private float _lifeDelay = 4.0f;
 	private float _lifeTime;
 
 	private AudioClip _sndTakeCoin;
@@ -33,7 +33,7 @@ public class CoinSensor : MonoBehaviour
 	void Update ()
 	{
 		_lifeTime += Time.deltaTime;
-		if (_lifeTime >= LifeDelay)
+		if (_lifeTime >= _lifeDelay)
 		{
 			Hide(true);
 		}
@@ -66,7 +66,9 @@ public class CoinSensor : MonoBehaviour
 	    }
 	}
 
-    public void Show() {
+    public void Show(float lifeDelay)
+    {
+	    _lifeDelay = lifeDelay;
         _isShowAnimation = true;
         _collider.enabled = true;
         IsVisible = true;
@@ -76,9 +78,9 @@ public class CoinSensor : MonoBehaviour
 	    _lifeTime = 0;
     }
 
-    public void Hide(bool animation)
+    public void Hide(bool anim)
     {
-	    _isHideAnimation = animation;
+	    _isHideAnimation = anim;
 	    if (_isHideAnimation)
 	    {
 

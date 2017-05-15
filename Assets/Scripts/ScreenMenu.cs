@@ -33,13 +33,13 @@ public class ScreenMenu : MonoBehaviour {
 				PlayerPrefs.SetInt ("BTN_GIFT_HIDE_DELAY_COUNTER", DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER);
 			}
 		} else {
-			long _timeOld = Convert.ToInt64 (strTime);
+			long timeOld = Convert.ToInt64 (strTime);
 			//Convert the old time from binary to a DataTime variable
-			_giftNextDate = DateTime.FromBinary(_timeOld);
+			_giftNextDate = DateTime.FromBinary(timeOld);
 		}
 
-		DateTime _currentDate = System.DateTime.UtcNow;
-		TimeSpan _difference = _giftNextDate.Subtract (_currentDate);
+		DateTime currentDate = System.DateTime.UtcNow;
+		TimeSpan _difference = _giftNextDate.Subtract (currentDate);
 		if (_difference.TotalSeconds <= 0f) {
 			//timeText.enabled = false;
 			_isWaitGiftTime = false;
@@ -54,14 +54,14 @@ public class ScreenMenu : MonoBehaviour {
 		showButtons ();
 	}
 
-	void Awake() 
+	void Awake()
 	{
 		Invoke("InitialRvButtonUpdate", 0.5f);
 		//PublishingService.Instance.OnRewardedVideoReadyChanged += IsVideoAdsAvailable;
 	}
 
 	void OnDestroy() {
-		
+
 		//PublishingService.Instance.OnRewardedVideoReadyChanged -= IsVideoAdsAvailable;
 	}
 
@@ -187,7 +187,7 @@ public class ScreenMenu : MonoBehaviour {
 		FlurryEventsManager.SendEvent ("collect_prize");
 
 		for (int i = 0; i < 10; i++) {
-			GameObject _coin = (GameObject)Instantiate (coin, Camera.main.ScreenToWorldPoint (giftButton.transform.position), Quaternion.identity); 
+			GameObject _coin = (GameObject)Instantiate (coin, Camera.main.ScreenToWorldPoint (giftButton.transform.position), Quaternion.identity);
 			Coin coinScript = _coin.GetComponent<Coin> ();
 			coinScript.MoveToEnd();
 		}
@@ -209,10 +209,13 @@ public class ScreenMenu : MonoBehaviour {
 	}
 
 	void Update() {
-		if (_isWaitGiftTime) {
+		if ((_isWaitGiftTime)
+		    &&((DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)
+		    ||(DefsGame.CurrentScreen == DefsGame.SCREEN_SKINS)
+		    ||(DefsGame.CurrentScreen == DefsGame.SCREEN_IAPS))) {
 			DateTime _currentDate = System.DateTime.UtcNow;
 			TimeSpan _difference = _giftNextDate.Subtract (_currentDate);
-			if ((_difference.TotalSeconds <= 0f)&&(DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)) {
+			if (_difference.TotalSeconds <= 0f) {
 				_isWaitGiftTime = false;
 				UIManager.ShowUiElement ("BtnGift");
 				FlurryEventsManager.SendEvent ("collect_prize_impression");

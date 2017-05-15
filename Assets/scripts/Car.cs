@@ -12,7 +12,6 @@ public class Car : MonoBehaviour
 	private float _crashRotation;
 //	private AudioClip _sndEngine;
 	private AudioSource _sndEngine;
-	private AudioClip _sndRotate;
 
 	private SpriteRenderer _spriteRenderer;
 //	private bool _isHideAnimation;
@@ -115,45 +114,57 @@ public class Car : MonoBehaviour
 
 		if (other.CompareTag("WallInside"))
 		{
-			DefsGame.CameraMovement.StopMoving();
-			GameEvents.Send(OnCrash, 0f);
-			Crash(CarSimulator.CurrVelocity);
+			if (!other.GetComponentInParent<RoadItem>().IsWaitToRemove)
+			{
+				DefsGame.CameraMovement.StopMoving();
+				GameEvents.Send(OnCrash, 0f);
+				Crash(CarSimulator.CurrVelocity);
+			}
 		} else
 
 		if (other.CompareTag("WallOutside"))
 		{
-			DefsGame.CameraMovement.StopMoving();
-			GameEvents.Send(OnCrash, 0f);
-			Crash(CarSimulator.CurrVelocity);
+			if (!other.GetComponentInParent<RoadItem>().IsWaitToRemove)
+			{
+				DefsGame.CameraMovement.StopMoving();
+				GameEvents.Send(OnCrash, 0f);
+				Crash(CarSimulator.CurrVelocity);
+			}
 		} else
 
 		if (other.CompareTag("RoadEdgeLine"))
 		{
 			RoadItem ri = other.gameObject.GetComponentInParent<RoadItem>();
-			int counter = ri.CrossEdgeLine();
-			if (counter == 1)
+			if (!ri.IsWaitToRemove)
 			{
-				GameEvents.Send(OnAddRoadItem, true);
-			}
-			if (counter == 2)
-			{
-				if (!DefsGame.CameraMovement.IsMovingToTarget)
-					DefsGame.CameraMovement.StartMoving();
+				int counter = ri.CrossEdgeLine();
+				if (counter == 1)
+				{
+					GameEvents.Send(OnAddRoadItem, true);
+				}
+				if (counter == 2)
+				{
+					if (!DefsGame.CameraMovement.IsMovingToTarget)
+						DefsGame.CameraMovement.StartMoving();
+				}
 			}
 		}else
 
 		if (other.CompareTag("RoadEdgeLine2"))
 		{
 			RoadItem ri = other.gameObject.GetComponentInParent<RoadItem>();
-			int counter = ri.CrossEdgeLine();
-			if (counter == 1)
+			if (!ri.IsWaitToRemove)
 			{
-				GameEvents.Send(OnAddRoadItem, false);
-			}
-			if (counter == 2)
-			{
-				if (!DefsGame.CameraMovement.IsMovingToTarget)
-					DefsGame.CameraMovement.StartMoving();
+				int counter = ri.CrossEdgeLine();
+				if (counter == 1)
+				{
+					GameEvents.Send(OnAddRoadItem, false);
+				}
+				if (counter == 2)
+				{
+					if (!DefsGame.CameraMovement.IsMovingToTarget)
+						DefsGame.CameraMovement.StartMoving();
+				}
 			}
 		}
 	}
