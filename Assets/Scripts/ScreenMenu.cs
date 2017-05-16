@@ -16,12 +16,15 @@ public class ScreenMenu : MonoBehaviour {
     private bool _isWaitGiftTime;
     private bool _isShowBtnViveoAds = true;
     private bool _isButtonHiden;
-
+	private AudioClip _sndStart;
 
 	// Use this for initialization
 	void Start () {
 		//Grab the old time from the player prefs as a long
 		string strTime = PlayerPrefs.GetString("dateGiftClicked");
+
+		_sndStart = Resources.Load<AudioClip>("snd/start");
+		Defs.PlaySound(_sndStart);
 		//_strTime = "";
 		//DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER = 0;
 		if (strTime == "") {

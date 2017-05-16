@@ -218,7 +218,7 @@ public class RoadManager : MonoBehaviour
 
 		++_roadCounter;
 
-		if ((_roadCounter == 4)||(_roadCounter-4 % 8 == 0)){
+		if ((_roadCounter == 4)||((_roadCounter-4) % 8 == 0)){
 			AddCoins();
 		}
 
@@ -273,13 +273,13 @@ public class RoadManager : MonoBehaviour
 
 		if (buildState == BuildState.BuildClimbItem)
 		{
-			if (Random.value > 0.8f) return BuildState.BuildSecondFloor;
+			if (Random.value > 0.5f) return BuildState.BuildSecondFloor;
 			return BuildState.BuildDescentItem;
 		}
 
 		if (buildState == BuildState.BuildDescentItem)
 		{
-			if (Random.value > 0.8f) return BuildState.BuildFirstFloor;
+			if (Random.value > 0.5f) return BuildState.BuildFirstFloor;
 			return BuildState.BuildClimbItem;
 		}
 

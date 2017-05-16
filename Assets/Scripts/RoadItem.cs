@@ -11,22 +11,26 @@ public class RoadItem : MonoBehaviour
 	[HideInInspector] public bool IsWaitToRemove;
 
 	private int _edgeLineCollideCounter;
-	private Vector3 _localCenter;
+	private Vector2 _localCenter;
+//	public GameObject Target;
 
 	public void SetRoadPicture(RoadPictureItem roadPicture)
 	{
 		_roadPicture = roadPicture;
-		float angle = 0f;
+		float angle = (90f + 45f) * Mathf.Deg2Rad;
 //			if (Type == RoadManager.RoadType.RightToDown) angle = 0f; else
-		if (Type == RoadManager.RoadType.DownToLeft) angle = 270f; else
-		if (Type == RoadManager.RoadType.LeftToUp) angle = 180f; else
-		if (Type == RoadManager.RoadType.UpToRight) angle = 90f;
+		if (Type == RoadManager.RoadType.DownToLeft) angle = (180f + 45f) * Mathf.Deg2Rad; else
+		if (Type == RoadManager.RoadType.LeftToUp) angle = (270f + 45f) * Mathf.Deg2Rad; else
+		if (Type == RoadManager.RoadType.UpToRight) angle = (45f)* Mathf.Deg2Rad;
 
 		Vector3 localCenter = _roadPicture.GetCenter();
-		_localCenter = new Vector3(localCenter.x * Mathf.Cos(angle * Mathf.Deg2Rad),
-			localCenter.y * Mathf.Sin(angle * Mathf.Deg2Rad), transform.position.z);
+		_localCenter = new Vector2(localCenter.x * Mathf.Cos(angle),
+			localCenter.y * Mathf.Sin(angle));
 
-		D.Log(transform.position + _localCenter);
+		_localCenter = new Vector2(_localCenter.x + transform.position.x, _localCenter.y + transform.position.y);
+		D.Log(_localCenter);
+
+//		if (Target) Target.transform.position = _localCenter;
 	}
 
 	public int CrossEdgeLine()
@@ -35,6 +39,7 @@ public class RoadItem : MonoBehaviour
 		if (_edgeLineCollideCounter >= 2)
 		{
 			Invoke ("StartRemovingProcess", 3f);
+			IsWaitToRemove = true;
 //			gameObject.SetActive(false);
 		}
 		return _edgeLineCollideCounter;
@@ -45,8 +50,8 @@ public class RoadItem : MonoBehaviour
 
 		if (IsWaitToRemove&&DefsGame.CameraMovement.IsMovingToTarget)
 		{
-			float distance = Vector2.Distance(DefsGame.CarSimulator.Car.transform.position, transform.position + _localCenter );
-			if (distance > 6f) Remove();
+			float distance = Vector2.Distance(DefsGame.CarSimulator.Car.transform.position, _localCenter );
+			if (distance > 12f) Remove();
 		}
 	}
 

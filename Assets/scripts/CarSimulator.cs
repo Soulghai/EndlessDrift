@@ -28,7 +28,7 @@ public class CarSimulator : MonoBehaviour
 	void Awake()
 	{
 		DefsGame.CarSimulator = this;
-		_sndRotate = Resources.Load<AudioClip>("snd/char_next");
+		_sndRotate = Resources.Load<AudioClip>("snd/rotate");
 		_sndOut = Resources.Load<AudioClip>("snd/CarOut");
 	}
 
@@ -154,7 +154,7 @@ public class CarSimulator : MonoBehaviour
 				//Body.transform.DORotate(Vector3.forward*180f, 1f);
 				transform.Rotate(Vector3.forward, 180f);
 				//Car.Rotate(new Vector3(0f, 0f, transform.rotation.z));
-				Defs.PlaySound(_sndRotate, 4f);
+				Defs.PlaySound(_sndRotate, 0.4f);
 			}
 		}
 	}
@@ -175,7 +175,7 @@ public class CarSimulator : MonoBehaviour
 	public void Crash(float delay)
 	{
 		_isCrash = true;
-		Defs.PlaySound(_sndOut);
+		Defs.PlaySound(_sndOut, 0.8f);
 	}
 
 //	var point : Vector3;
