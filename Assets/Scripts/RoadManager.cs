@@ -40,6 +40,7 @@ public class RoadManager : MonoBehaviour
 
 	private readonly List<CoinSensor> _coinObjects = new List<CoinSensor>();
 	private int _roadCounter = 0;
+	private int _zIndexCounter;
 
 	// Use this for initialization
 	void Start ()
@@ -103,6 +104,8 @@ public class RoadManager : MonoBehaviour
 	{
 		Clear();
 
+		_zIndexCounter = 0;
+		
 		_buildState = BuildState.BuildFirstFloor;
 
 		RoadType type1;
@@ -214,6 +217,7 @@ public class RoadManager : MonoBehaviour
 		_lastRoadItem = go.GetComponent<RoadItem>();
 
 		_lastRoadItem.SetRoadPicture(Pictures.GetSuitablePicture(type, prevType, _buildState, position, isFirstEnter));
+		_lastRoadItem.SetZIndex(_zIndexCounter++);
 //		_lastRoadItem.RoadPictureItem.RoadItem = _lastRoadItem;
 
 		++_roadCounter;

@@ -8,4 +8,9 @@ public class RoadPictureItem : MonoBehaviour {
 	{
 		return GetComponent<SpriteRenderer>().sprite.bounds.center;
 	}
+
+	public void SetZIndex(int value)
+	{
+		GetComponent<SpriteRenderer>().sortingOrder = value;
+	}
 }

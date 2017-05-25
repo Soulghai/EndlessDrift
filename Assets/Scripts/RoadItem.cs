@@ -33,12 +33,17 @@ public class RoadItem : MonoBehaviour
 //		if (Target) Target.transform.position = _localCenter;
 	}
 
+	public void SetZIndex(int value)
+	{
+		_roadPicture.SetZIndex(value);
+	}
+
 	public int CrossEdgeLine()
 	{
 		++_edgeLineCollideCounter;
 		if (_edgeLineCollideCounter >= 2)
 		{
-			Invoke ("StartRemovingProcess", 3f);
+//			Invoke ("StartRemovingProcess", 3f);
 			IsWaitToRemove = true;
 //			gameObject.SetActive(false);
 		}
@@ -51,14 +56,14 @@ public class RoadItem : MonoBehaviour
 		if (IsWaitToRemove&&DefsGame.CameraMovement.IsMovingToTarget)
 		{
 			float distance = Vector2.Distance(DefsGame.CarSimulator.Car.transform.position, _localCenter );
-			if (distance > 12f) Remove();
+			if (distance > 16f) Remove();
 		}
 	}
 
-	private void StartRemovingProcess()
-	{
-		IsWaitToRemove = true;
-	}
+//	private void StartRemovingProcess()
+//	{
+//		IsWaitToRemove = true;
+//	}
 
 	public void Remove()
 	{
