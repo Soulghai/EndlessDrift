@@ -14,11 +14,11 @@ public class ScreenMenu : MonoBehaviour {
     private bool _isBtnSettingsClicked = false;
     private DateTime _giftNextDate;
     private bool _isWaitGiftTime;
-    private bool _isShowBtnViveoAds = true;
+    private bool _isShowBtnViveoAds;
     private bool _isButtonHiden;
 	private AudioClip _sndStart;
+	private bool _isWaitReward;
 
-	// Use this for initialization
 	void Start () {
 		//Grab the old time from the player prefs as a long
 		string strTime = PlayerPrefs.GetString("dateGiftClicked");
@@ -36,13 +36,13 @@ public class ScreenMenu : MonoBehaviour {
 				PlayerPrefs.SetInt ("BTN_GIFT_HIDE_DELAY_COUNTER", DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER);
 			}
 		} else {
-			long timeOld = Convert.ToInt64 (strTime);
+			long _timeOld = Convert.ToInt64 (strTime);
 			//Convert the old time from binary to a DataTime variable
-			_giftNextDate = DateTime.FromBinary(timeOld);
+			_giftNextDate = DateTime.FromBinary(_timeOld);
 		}
 
-		DateTime currentDate = System.DateTime.UtcNow;
-		TimeSpan _difference = _giftNextDate.Subtract (currentDate);
+		DateTime _currentDate = DateTime.UtcNow;
+		TimeSpan _difference = _giftNextDate.Subtract (_currentDate);
 		if (_difference.TotalSeconds <= 0f) {
 			//timeText.enabled = false;
 			_isWaitGiftTime = false;
@@ -72,12 +72,30 @@ public class ScreenMenu : MonoBehaviour {
 	{
 		ScreenGame.OnShowMenu += ScreenGame_OnShowMenu;
 		RoadManager.OnGameplayStart += ScreenGame_OnHideMenu;
+		
+		GlobalEvents<OnGiveReward>.Happened += GetReward;
+		GlobalEvents<OnRewardedVideoAvailable>.Happened += IsRewardedVideoAvailable;
 	}
 
 	void OnDisable()
 	{
 		ScreenGame.OnShowMenu -= ScreenGame_OnShowMenu;
 		RoadManager.OnGameplayStart += ScreenGame_OnHideMenu;
+		
+		GlobalEvents<OnGiveReward>.Happened -= GetReward;
+		GlobalEvents<OnRewardedVideoAvailable>.Happened -= IsRewardedVideoAvailable;
+	}
+	
+	private void IsRewardedVideoAvailable(OnRewardedVideoAvailable e) {
+		_isShowBtnViveoAds = e.isAvailable;
+		if (_isShowBtnViveoAds) {
+			if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU) {
+				UIManager.ShowUiElement ("BtnVideoAds");
+				FlurryEventsManager.SendEvent ("RV_strawberries_impression", "start_screen");
+			}
+		} else {
+			UIManager.HideUiElement ("BtnVideoAds");
+		}
 	}
 
 	void ScreenGame_OnShowMenu ()
@@ -92,18 +110,6 @@ public class ScreenMenu : MonoBehaviour {
 	void InitialRvButtonUpdate()
 	{
 		//IsVideoAdsAvailable(PublishingService.Instance.IsRewardedVideoReady());
-	}
-
-	void IsVideoAdsAvailable(bool _flag) {
-		_isShowBtnViveoAds = _flag;
-		if (_flag) {
-			if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU) {
-				UIManager.ShowUiElement ("BtnVideoAds");
-				FlurryEventsManager.SendEvent ("RV_strawberries_impression", "start_screen");
-			}
-		} else {
-			UIManager.HideUiElement ("BtnVideoAds");
-		}
 	}
 
 	public void showButtons() {
@@ -242,32 +248,32 @@ public class ScreenMenu : MonoBehaviour {
 		//PublishingService.Instance.ShowAppShelf();
 		FlurryEventsManager.SendEvent ("more_games");
 	}
+	
+	private void GetReward(OnGiveReward e)
+	{
+		if (_isWaitReward)
+		{
+			_isWaitReward = false;
+			if (e.isAvailable)
+			{
+				for (int i = 0; i < 25; i++)
+				{
+					GameObject _coin = (GameObject) Instantiate(coin,
+						Camera.main.ScreenToWorldPoint(videoAdsButton.transform.position),
+						Quaternion.identity);
+					Coin coinScript = _coin.GetComponent<Coin>();
+					coinScript.MoveToEnd();
+				}
+				FlurryEventsManager.SendEvent("RV_strawberries_complete", "start_screen", true, 25);
+			}
+		}
+	}
 
 	public void OnVideoAdsClicked()
 	{
-		/*FlurryEventsManager.SendEvent ("RV_strawberries", "start_screen");
-
-		//Defs.MuteSounds (true);
-
-		if (!PublishingService.Instance.IsRewardedVideoReady())
-		{
-			NPBinding.UI.ShowAlertDialogWithSingleButton("Ads not available", "Check your Internet connection or try later!", "Ok", (string _buttonPressed) => {});
-			return;
-		}
-
-
-		PublishingService.Instance.ShowRewardedVideo (isSuccess => {
-			if (isSuccess) {
-				for (int i = 0; i < 25; i++) {
-					GameObject _coin = (GameObject)Instantiate (coin, Camera.main.ScreenToWorldPoint (videoAdsButton.transform.position), Quaternion.identity); 
-					Coin coinScript = _coin.GetComponent<Coin> ();
-					coinScript.MoveToEnd ();
-				}
-				FlurryEventsManager.SendEvent ("RV_strawberries_complete", "start_screen", true, 25);
-			}else {
-			}
-			//Defs.MuteSounds (false);
-		});*/
+		FlurryEventsManager.SendEvent ("RV_strawberries", "start_screen");
+		MyAds.ShowRewardedAds();
+		_isWaitReward = true;
 	}
 
 	public void RateUs() {

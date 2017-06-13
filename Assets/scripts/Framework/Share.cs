@@ -1,24 +1,22 @@
 ﻿using UnityEngine;
-using System.Collections;
 //using VoxelBusters.NativePlugins;
-//using VoxelBusters.Utility;
 
 public class Share : MonoBehaviour {
 
-	/*void Start() {
-		Defs.shareVoxel = this;
+	void Start() {
+		Defs.ShareVoxel = this;
 	}
 
 	public void ShareClick ()
 	{
-		string _shareLink = "https://play.google.com/store/apps/details?id=com.crazylabs.monsteryumm";
+		string _shareLink = "http://smarturl.it/YummMonsters";
 
 		#if UNITY_IOS
 
-		_shareLink = "http://itunes.apple.com/app/id1192223024";
+		_shareLink = "http://smarturl.it/YummMonsters";
 		#endif
 
-		string _shareText = "Wow! I Just Scored ["+DefsGame.gameBestScore.ToString()+ "] in #YummMonsters! Can You Beat Me? @tabtale " + _shareLink;
+		string shareText = "Wow! I Just Scored ["+DefsGame.GameBestScore.ToString()+ "] in #YummMonsters! Can You Beat Me? @AppsoluteGames " + _shareLink;
 
 
 		string _screenShotPath = Application.persistentDataPath + "/promo1.jpg";
@@ -27,26 +25,24 @@ public class Share : MonoBehaviour {
 			_screenShotPath = Application.persistentDataPath + "/promo2.jpg";
 		}
 
-		ShareImageAtPathUsingShareSheet (_shareText, _screenShotPath);
+		ShareImageAtPathUsingShareSheet (shareText, _screenShotPath);
 	}
 
 	void ShareImageAtPathUsingShareSheet(string _shareText, string _screenShotPath) {
-		// Create share sheet
-		ShareSheet _shareSheet 	= new ShareSheet();	
-
-		_shareSheet.Text = _shareText;
-		_shareSheet.AttachImageAtPath(_screenShotPath);
-
-		// Show composer
-		NPBinding.UI.SetPopoverPointAtLastTouchPosition();
-		NPBinding.Sharing.ShowView(_shareSheet, FinishedSharing);
+//		// Create share sheet
+//		ShareSheet shareSheet 	= new ShareSheet();
+//
+//		shareSheet.Text = _shareText;
+//		shareSheet.AttachImageAtPath(_screenShotPath);
+//
+//		// Show composer
+//		NPBinding.UI.SetPopoverPointAtLastTouchPosition();
+//		NPBinding.Sharing.ShowView(shareSheet, FinishedSharing);
 	}
 
-	void FinishedSharing (eShareResult _result)
-	{
-		Debug.Log("Finished sharing");
-		Debug.Log("Share Result = " + _result);
-	}
-
-	*/
+//	void FinishedSharing (eShareResult _result)
+//	{
+//		Debug.Log("Finished sharing");
+//		Debug.Log("Share Result = " + _result);
+//	}
 }

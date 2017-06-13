@@ -13,16 +13,15 @@ public struct DefsGame {
 	public static float WOW_MEETERER				= 0;
 	public static bool WOW_MEETERER_x2 = false;
 	public static bool WOW_MEETERER_x3 = false;
-	public static int gameplayCounter 				= 0;		// Считает количество игр сыгранных в этой игровой сессии
-	public static int currentPointsCount			= 0;
-	public static int gameBestScore					= 0;		// Лучший счет
-	public static int coinsCount					= 0;		// Количество очков игрока
-	public static int currentFaceID = 0;
+	public static int GameplayCounter 				= 0;		// Считает количество игр сыгранных в этой игровой сессии
+	public static int CurrentPointsCount			= 0;
+	public static int GameBestScore					= 0;		// Лучший счет
+	public static int CoinsCount					= 0;		// Количество очков игрока
+	public static int CurrentFaceId = 0;
 	public static int ThrowsCounter = 0;
-	public static bool isCanPlay = true;
-	public static readonly int bubbleMaxSize = 5;
-	public static int[] faceAvailable = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	public static readonly int[] facePrice = new int[] { 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600 };
+	public static bool IsCanPlay = true;
+	public static int[] FaceAvailable = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	public static readonly int[] FacePrice = new int[] { 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600 };
 	public static int BTN_GIFT_HIDE_DELAY 			= 0;
 	public static int BTN_GIFT_HIDE_DELAY_COUNTER	= 0;
 	public static readonly int[] BTN_GIFT_HIDE_DELAY_ARR = new int[] {1, 2, 5, 10, 15, 20, 25, 30, 60};
@@ -69,24 +68,25 @@ public struct DefsGame {
     public static Coins Coins { get; set; }
     public static bool IsNeedToShowCoin = false;
 
-    static public void LoadVariables() {
+
+	static public void LoadVariables() {
 		NoAds = PlayerPrefs.GetInt ("noAds", 0);
-		currentFaceID = PlayerPrefs.GetInt ("currentFaceID", 0);
+		CurrentFaceId = PlayerPrefs.GetInt ("currentFaceID", 0);
 		//currentFaceID = 0;
-		gameBestScore = PlayerPrefs.GetInt ("BestScore", 0);
+		GameBestScore = PlayerPrefs.GetInt ("BestScore", 0);
 		//gameBestScore = 0;
-		coinsCount = PlayerPrefs.GetInt ("coinsCount", 0);
+		CoinsCount = PlayerPrefs.GetInt ("coinsCount", 0);
 		//coinsCount = 0;
 		RateCounter = PlayerPrefs.GetInt ("rateCounter", 0);
 
 		//loadRewardedClock();
 		//loadGiftClock();
 
-		for (int i = 0; i < faceAvailable.Length; i++)  {
+		for (int i = 0; i < FaceAvailable.Length; i++)  {
 			if (i == 0)
-				faceAvailable [0] = 1;
+				FaceAvailable [0] = 1;
 			else {
-				faceAvailable [i] = PlayerPrefs.GetInt ("faceAvailable_" + i, 0);
+				FaceAvailable [i] = PlayerPrefs.GetInt ("faceAvailable_" + i, 0);
 				//PlayerPrefs.SetInt ("faceAvailable_" + i, 0);
 			}
 		}

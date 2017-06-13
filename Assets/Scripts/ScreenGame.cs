@@ -42,6 +42,9 @@ public class ScreenGame : MonoBehaviour {
     private AudioClip _sndShowScreen;
     private AudioClip _sndGrab;
     private AudioClip _sndClose;
+	
+	private bool _isWaitReward;
+	private bool IsRewardedVideoReadyToShow;
 
 	void Awake ()
 	{
@@ -75,14 +78,14 @@ public class ScreenGame : MonoBehaviour {
 	}
 
 	void Init() {
-		DefsGame.GameServices.ReportProgressWithGlobalID (DefsGame.GameServices.ACHIEVEMENT_FIRST_WIN, DefsGame.gameBestScore);
+		DefsGame.GameServices.ReportProgressWithGlobalID (DefsGame.GameServices.ACHIEVEMENT_FIRST_WIN, DefsGame.GameBestScore);
 
 		++DefsGame.QUEST_GAMEPLAY_Counter;
 		PlayerPrefs.SetInt ("QUEST_GAMEPLAY_Counter", DefsGame.QUEST_GAMEPLAY_Counter);
 
 		DefsGame.GameServices.ReportProgressWithGlobalID (DefsGame.GameServices.ACHIEVEMENT_MASTER, DefsGame.QUEST_GAMEPLAY_Counter);
 
-		++DefsGame.gameplayCounter;
+		++DefsGame.GameplayCounter;
 	
 		PlayerPrefs.SetInt ("QUEST_THROW_CounterCounter", DefsGame.QUEST_THROW_Counter);
 
@@ -111,12 +114,20 @@ public class ScreenGame : MonoBehaviour {
 	    CarSimulator.OnGameOver += OnCrash;
 		CarSimulator.OnAddPoints += OnAddPoints;
 		RoadManager.OnGameplayStart += OnGameplayStart;
+	    GlobalEvents<OnGiveReward>.Happened += GetReward;
+	    GlobalEvents<OnRewardedVideoAvailable>.Happened += IsRewardedVideoAvailable;
 	}
 
     private void OnDisable() {
 	    CarSimulator.OnGameOver -= OnCrash;
 	    CarSimulator.OnAddPoints -= OnAddPoints;
 	    RoadManager.OnGameplayStart -= OnGameplayStart;
+	    GlobalEvents<OnGiveReward>.Happened -= GetReward;
+	    GlobalEvents<OnRewardedVideoAvailable>.Happened -= IsRewardedVideoAvailable;
+	}
+	
+	private void IsRewardedVideoAvailable(OnRewardedVideoAvailable e) {
+		IsRewardedVideoReadyToShow = e.isAvailable;
 	}
 
 	void OnAddPoints (int pointsCount)
@@ -125,7 +136,6 @@ public class ScreenGame : MonoBehaviour {
 			return;
 		D.Log ("Ball_OnBallInBasket");
 		_isNextLevel = true;
-		//int _pointsCount = DefsGame.bubbleMaxSize - _bubble.GetStartSize () + 1;
 
 		_points.AddPoint (pointsCount);
 //		_poinsBmScript.AddPoints (pointsCount);
@@ -154,7 +164,7 @@ public class ScreenGame : MonoBehaviour {
 
 		++DefsGame.QUEST_THROW_Counter;
 
-		if (DefsGame.gameplayCounter == 1) {
+		if (DefsGame.GameplayCounter == 1) {
 			_points.ShowAnimation ();
 		}
 		if (_state == 1) {
@@ -292,7 +302,7 @@ public class ScreenGame : MonoBehaviour {
                 DefsGame.gameServices.SubmitScore (DefsGame.gameBestScore);
                 PlayerPrefs.SetInt ("BestScore", DefsGame.gameBestScore);
             }*/
-	            PlayerPrefs.SetInt("coinsCount", DefsGame.coinsCount);
+	            PlayerPrefs.SetInt("coinsCount", DefsGame.CoinsCount);
 
 	            HintCheck();
 	            IsGameOver = false;
@@ -350,63 +360,60 @@ public class ScreenGame : MonoBehaviour {
 	}
 
 	public void Revive() {
-		/*FlurryEventsManager.SendEvent ("RV_revive");
-
-		if (!PublishingService.Instance.IsRewardedVideoReady())
+		FlurryEventsManager.SendEvent ("RV_revive");
+		MyAds.ShowRewardedAds();
+		_isWaitReward = true;
+	}
+	
+	private void GetReward(OnGiveReward e)
+	{
+		if (_isWaitReward)
 		{
-			NPBinding.UI.ShowAlertDialogWithSingleButton("Ads not available", "Check your Internet connection or try later!", "Ok", (string _buttonPressed) => {});
-			return;
-		}
-
-
-		//Defs.MuteSounds (true);
-		PublishingService.Instance.ShowRewardedVideo(isSuccess => {
-			if (isSuccess)
+			_isWaitReward = false;
+			if (e.isAvailable)
 			{
-				state = 2;
-				isNextLevel = true;
-				isGameOver = false;
-				isReviveUsed = true;
-				DefsGame.wowSlider.MakeX3 (1.1f);
-				bubbleField.Hide ();
+				_state = 2;
+				_isNextLevel = true;
+				IsGameOver = false;
+				_isReviveUsed = true;
+//				_bubbleField.Hide();
 
-				HideReviveScreen();
-				Defs.PlaySound (sndGrab);
+				ReviveClose();
+				Defs.PlaySound(_sndGrab);
 
-				FlurryEventsManager.SendEvent ("RV_revive_complete");
+				FlurryEventsManager.SendEvent("RV_revive_complete");
 			}
 			else
 			{
-				HideReviveScreen();
-				state = 6;
+				ReviveClose();
+				_state = 6;
 			}
-			//Defs.MuteSounds (false);
-		});*/
+		}
 	}
 
 	public void Share() {
-		/*UIManager.HideUiElement ("ScreenShare");
+		UIManager.HideUiElement ("ScreenShare");
 		UIManager.HideUiElement ("ScreenShareBtnShare");
 		UIManager.HideUiElement ("ScreenShareBtnBack");
 		if (SystemInfo.deviceModel.Contains ("iPad")) {
-			Defs.shareVoxel.ShareClick ();
+			Defs.ShareVoxel.ShareClick ();
 		} else {
-			Defs.share.ShareClick ();
+			Defs.Share.ShareClick ();
 		}
 		FlurryEventsManager.SendEvent ("high_score_share");
-		Defs.PlaySound (sndGrab);
-		EndCurrentGame ();*/
+		Defs.PlaySound (_sndGrab);
+		EndCurrentGame ();
 	}
 
 
 	public void Rate() {
-		/*UIManager.HideUiElement ("ScreenRate");
+		UIManager.HideUiElement ("ScreenRate");
 		UIManager.HideUiElement ("ScreenRateBtnRate");
 		UIManager.HideUiElement ("ScreenRateBtnBack");
-		Defs.PlaySound (sndGrab);
-		Defs.rate.RateUs ();
+		Defs.PlaySound (_sndGrab);
+		Defs.Rate.RateUs ();
 		FlurryEventsManager.SendEvent ("rate_us_impression", "revive_screen");
-		EndCurrentGame ();*/
+		EndCurrentGame ();
 	}
 
 	public void ReviveClose() {

@@ -25,12 +25,12 @@ public class Car : MonoBehaviour
 			particle.Stop();
 		}
 		_spriteRenderer = GetComponent<SpriteRenderer>();
-		SetNewSkin(DefsGame.currentFaceID);
+		SetNewSkin(DefsGame.CurrentFaceId);
 		gameObject.SetActive(false);
 	}
 
 	public void SetNewSkin(int id) {
-		LoadSprites (DefsGame.currentFaceID);
+		LoadSprites (DefsGame.CurrentFaceId);
 	}
 
 	private void LoadSprites(int id){

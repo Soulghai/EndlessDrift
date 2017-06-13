@@ -108,19 +108,19 @@ public class CarSimulator : MonoBehaviour
 		{
 
 			bool accIsChanged = false;
-			if (DefsGame.currentPointsCount < 30)
+			if (DefsGame.CurrentPointsCount < 30)
 			{
 				_acceleration = 0.03f;
 				accIsChanged = true;
-			} else if (DefsGame.currentPointsCount < 50)
+			} else if (DefsGame.CurrentPointsCount < 50)
 			{
 				_acceleration = 0.015f;
 				accIsChanged = true;
-			} else if (DefsGame.currentPointsCount < 100)
+			} else if (DefsGame.CurrentPointsCount < 100)
 			{
 				_acceleration = 0.01f;
 				accIsChanged = true;
-			} else if (DefsGame.currentPointsCount < 200)
+			} else if (DefsGame.CurrentPointsCount < 200)
 			{
 				_acceleration = 0.005f;
 				accIsChanged = true;

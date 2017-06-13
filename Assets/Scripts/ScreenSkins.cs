@@ -26,19 +26,19 @@ public class ScreenSkins : MonoBehaviour {
 	void SetSkin(int _id) {
 		FlurryEventsManager.SendEvent ("candy_purchase_<" + _id.ToString() + ">");
 
-		if (_id == DefsGame.currentFaceID)
+		if (_id == DefsGame.CurrentFaceId)
 			return;
 
-		if (DefsGame.faceAvailable [_id] == 1) {
-			DefsGame.currentFaceID = _id;
-			PlayerPrefs.SetInt ("currentFaceID", DefsGame.currentFaceID);
+		if (DefsGame.FaceAvailable [_id] == 1) {
+			DefsGame.CurrentFaceId = _id;
+			PlayerPrefs.SetInt ("currentFaceID", DefsGame.CurrentFaceId);
 		    DefsGame.CarSimulator.Car.SetNewSkin (_id);
 
-		} else if (DefsGame.coinsCount >= DefsGame.facePrice [_id-1]) {
-			GameEvents.Send(OnAddCoinsVisual, -DefsGame.facePrice [_id-1]);
-			DefsGame.faceAvailable [_id] = 1;
-			DefsGame.currentFaceID = _id;
-			PlayerPrefs.SetInt ("currentFaceID", DefsGame.currentFaceID);
+		} else if (DefsGame.CoinsCount >= DefsGame.FacePrice [_id-1]) {
+			GameEvents.Send(OnAddCoinsVisual, -DefsGame.FacePrice [_id-1]);
+			DefsGame.FaceAvailable [_id] = 1;
+			DefsGame.CurrentFaceId = _id;
+			PlayerPrefs.SetInt ("currentFaceID", DefsGame.CurrentFaceId);
 			PlayerPrefs.SetInt ("faceAvailable_" + _id.ToString (), 1);
 			DefsGame.CarSimulator.Car.SetNewSkin (_id);
 
@@ -144,7 +144,7 @@ public class ScreenSkins : MonoBehaviour {
 		FlurryEventsManager.SendStartEvent ("candy_shop_length");
 
 		DefsGame.CurrentScreen = DefsGame.SCREEN_SKINS;
-		DefsGame.isCanPlay = false;
+		DefsGame.IsCanPlay = false;
 		ChooseColorForButtons ();
 		ShowButtons ();
 	}
@@ -153,106 +153,30 @@ public class ScreenSkins : MonoBehaviour {
 		FlurryEventsManager.SendEndEvent ("candy_shop_length");
 
 		DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
-		DefsGame.isCanPlay = true;
+		DefsGame.IsCanPlay = true;
 		ChooseColorForButtons ();
 		HideButtons ();
 	}
 
-	public void ChooseColorForButtons() {
-		if (DefsGame.faceAvailable [1] == 1) {
-			skin2.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.white; 
-			skin2.GetComponentInChildren<Text> ().text = "";
-		} else {
-			skin2.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.black;
-			skin2.GetComponentInChildren<Text> ().text = DefsGame.facePrice [0].ToString ();
-		}
-		if (DefsGame.faceAvailable[2] == 1) {
-			skin3.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.white; 
-			skin3.GetComponentInChildren<Text> ().text = "";
-		} else {
-			skin3.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.black;
-			skin3.GetComponentInChildren<Text> ().text = DefsGame.facePrice [1].ToString ();
-		}
-		if (DefsGame.faceAvailable[3] == 1) {
-			skin4.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.white; 
-			skin4.GetComponentInChildren<Text> ().text = "";
-		} else {
-			skin4.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.black;
-			skin4.GetComponentInChildren<Text> ().text = DefsGame.facePrice [2].ToString ();
-		}
-		if (DefsGame.faceAvailable[4] == 1) {
-			skin5.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.white; 
-			skin5.GetComponentInChildren<Text> ().text = "";
-		} else {
-			skin5.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.black;
-			skin5.GetComponentInChildren<Text> ().text = DefsGame.facePrice [3].ToString ();
-		}
-		if (DefsGame.faceAvailable[5] == 1) {
-			skin6.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.white; 
-			skin6.GetComponentInChildren<Text> ().text = "";
-		} else {
-			skin6.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.black;
-			skin6.GetComponentInChildren<Text> ().text = DefsGame.facePrice [4].ToString ();
-		}
-		if (DefsGame.faceAvailable[6] == 1) {
-			skin7.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.white; 
-			skin7.GetComponentInChildren<Text> ().text = "";
-		} else {
-			skin7.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.black;
-			skin7.GetComponentInChildren<Text> ().text = DefsGame.facePrice [5].ToString ();
-		}
-		if (DefsGame.faceAvailable[7] == 1) {
-			skin8.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.white; 
-			skin8.GetComponentInChildren<Text> ().text = "";
-		} else {
-			skin8.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.black;
-			skin8.GetComponentInChildren<Text> ().text = DefsGame.facePrice [6].ToString ();
-		}
-		if (DefsGame.faceAvailable[8] == 1) {
-			skin9.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.white; 
-			skin9.GetComponentInChildren<Text> ().text = "";
-		} else {
-			skin9.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.black;
-			skin9.GetComponentInChildren<Text> ().text = DefsGame.facePrice [7].ToString ();
-		}
-		if (DefsGame.faceAvailable[9] == 1) {
-			skin10.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.white; 
-			skin10.GetComponentInChildren<Text> ().text = "";
-		} else {
-			skin10.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.black;
-			skin10.GetComponentInChildren<Text> ().text = DefsGame.facePrice [8].ToString ();
-		}
-		if (DefsGame.faceAvailable[10] == 1) {
-			skin11.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.white; 
-			skin11.GetComponentInChildren<Text> ().text = "";
-		} else {
-			skin11.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.black;
-			skin11.GetComponentInChildren<Text> ().text = DefsGame.facePrice [9].ToString ();
-		}
-		if (DefsGame.faceAvailable[11] == 1) {
-			skin12.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.white; 
-			skin12.GetComponentInChildren<Text> ().text = "";
-		} else {
-			skin12.GetComponentInChildren<UIButton> ().GetComponent<Image>().color = Color.black;
-			skin12.GetComponentInChildren<Text> ().text = DefsGame.facePrice [10].ToString ();
-		}
-	}
-
-	public void CheckAvailableSkin() {
-		for (int i = 1; i < DefsGame.faceAvailable.Length; i++) {
-			if ((DefsGame.faceAvailable[i] == 0)&&(DefsGame.coinsCount >= DefsGame.facePrice[i-1])) {
-				haveNewSkin.SetActive (true);
-				//return true;
-				return;
-			}
-		}
-		haveNewSkin.SetActive (false);
-		//return false;
-	}
+    private void ChooseColorForButtons() {
+        for (int i = 1; i < DefsGame.FaceAvailable.Length; i++)
+        {
+            if (DefsGame.FaceAvailable[i] == 1)
+            {
+                skin2.GetComponentInChildren<UIButton>().GetComponent<Image>().color = Color.white;
+                skin2.GetComponentInChildren<Text>().text = "";
+            }
+            else
+            {
+                skin2.GetComponentInChildren<UIButton>().GetComponent<Image>().color = Color.black;
+                skin2.GetComponentInChildren<Text>().text = DefsGame.FacePrice[i - 1].ToString();
+            }
+        }
+    }
 
 	public bool CheckAvailableSkinBool() {
-		for (int i = 1; i < DefsGame.faceAvailable.Length; i++) {
-			if ((DefsGame.faceAvailable[i] == 0)&&(DefsGame.coinsCount >= DefsGame.facePrice[i-1])) {
+		for (int i = 1; i < DefsGame.FaceAvailable.Length; i++) {
+			if ((DefsGame.FaceAvailable[i] == 0)&&(DefsGame.CoinsCount >= DefsGame.FacePrice[i-1])) {
 				haveNewSkin.SetActive (true);
 				return true;
 			}

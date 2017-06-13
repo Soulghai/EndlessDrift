@@ -23,7 +23,7 @@ public class Points : MonoBehaviour {
 	}
 
 	public void ResetCounter() {
-		DefsGame.currentPointsCount = 0;
+		DefsGame.CurrentPointsCount = 0;
 		textField.text = "0";
 	}
 	
@@ -56,20 +56,20 @@ public class Points : MonoBehaviour {
 
 	public void AddPoint(int count)
 	{
-		DefsGame.currentPointsCount += count;
-		if (DefsGame.gameBestScore < DefsGame.currentPointsCount) {
-			DefsGame.gameBestScore = DefsGame.currentPointsCount;
+		DefsGame.CurrentPointsCount += count;
+		if (DefsGame.GameBestScore < DefsGame.CurrentPointsCount) {
+			DefsGame.GameBestScore = DefsGame.CurrentPointsCount;
 		}
 		_isPointAdded = true;
 	}
 
 	void AddPointVisual()
 	{
-		textField.text = DefsGame.currentPointsCount.ToString ();
+		textField.text = DefsGame.CurrentPointsCount.ToString ();
 		textField.transform.localScale = new Vector3 (_startScale*1.4f, _startScale*1.4f, 1f);
 	}
 
 	public void UpdateVisual() {
-		textField.text = DefsGame.currentPointsCount.ToString ();
+		textField.text = DefsGame.CurrentPointsCount.ToString ();
 	}
 }
