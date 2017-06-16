@@ -9,19 +9,24 @@ public class ScreenCoins : MonoBehaviour {
 
 	[HideInInspector] public string PrevScreenName;
 	private bool _isWaitReward;
+
+	void Start()
+	{
+		DefsGame.ScreenCoins = this;
+	}
 	
 	void OnEnable() {
 		GlobalEvents<OnGiveReward>.Happened += GetReward;
-		GlobalEvents<OnRewardedVideoAvailable>.Happened += IsRewardedVideoAvailable;
+		GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
 	}
 
 	void OnDisable() {
 		GlobalEvents<OnGiveReward>.Happened -= GetReward;
-		GlobalEvents<OnRewardedVideoAvailable>.Happened -= IsRewardedVideoAvailable;
+		GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
 	}
 
 	public void ShowButtons() {
-		UIManager.ShowUiElement ("scrCoinsBtnBack");
+		UIManager.ShowUiElement ("ScreenCoinsBtnBack");
 		UIManager.ShowUiElement ("BtnTier1");
 		UIManager.ShowUiElement ("BtnTier2");
 		if (isShowBtnViveoAds) {
@@ -35,7 +40,7 @@ public class ScreenCoins : MonoBehaviour {
 	}
 
 	public void HideButtons() {
-		UIManager.HideUiElement ("scrCoinsBtnBack");
+		UIManager.HideUiElement ("ScreenCoinsBtnBack");
 		UIManager.HideUiElement ("BtnTier1");
 		UIManager.HideUiElement ("BtnTier2");
 		UIManager.HideUiElement ("ScreenCoinsBtnVideo");
@@ -43,7 +48,7 @@ public class ScreenCoins : MonoBehaviour {
 		UIManager.HideUiElement ("ScreenCoinsBtnRestore");
 	}
 
-	private void IsRewardedVideoAvailable(OnRewardedVideoAvailable e) {
+	private void IsRewardedVideoAvailable(OnRewardedAvailable e) {
 		isShowBtnViveoAds = e.isAvailable;
 		if (isShowBtnViveoAds) {
 			if (DefsGame.CurrentScreen == DefsGame.SCREEN_IAPS) {

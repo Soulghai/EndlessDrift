@@ -6,15 +6,15 @@ public class MyAds : MonoBehaviour {
 
 	void OnEnable()
 	{
-		GlobalEvents<OnRewardedVideoAvailable>.Happened += IsRewardedVideoAvailable;
+		GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
 	}
 
 	void OnDisable()
 	{
-		GlobalEvents<OnRewardedVideoAvailable>.Happened -= IsRewardedVideoAvailable;
+		GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
 	}
 	
-	private void IsRewardedVideoAvailable(OnRewardedVideoAvailable e) {
+	private void IsRewardedVideoAvailable(OnRewardedAvailable e) {
 		if (!e.isAvailable)
 		{
 			_videoAdCounter = 0;

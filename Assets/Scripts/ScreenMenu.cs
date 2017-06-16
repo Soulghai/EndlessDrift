@@ -1,71 +1,23 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using DoozyUI;
-using System;
 
 public class ScreenMenu : MonoBehaviour {
 	//public static event Action<int> OnAddCoins;
-	public GameObject coin;
-	public Text timeText;
 	public UIButton videoAdsButton;
-	public UIButton giftButton;
 	public AudioClip sndBtnClick;
-
+	public GameObject coin;
     private bool _isBtnSettingsClicked = false;
-    private DateTime _giftNextDate;
-    private bool _isWaitGiftTime;
+    
     private bool _isShowBtnViveoAds;
     private bool _isButtonHiden;
 	private AudioClip _sndStart;
 	private bool _isWaitReward;
 
 	void Start () {
-		//Grab the old time from the player prefs as a long
-		string strTime = PlayerPrefs.GetString("dateGiftClicked");
-
 		_sndStart = Resources.Load<AudioClip>("snd/start");
 		Defs.PlaySound(_sndStart);
-		//_strTime = "";
-		//DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER = 0;
-		if (strTime == "") {
-			_giftNextDate = System.DateTime.UtcNow;
-			DefsGame.BTN_GIFT_HIDE_DELAY = DefsGame.BTN_GIFT_HIDE_DELAY_ARR [DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER];
-			_giftNextDate = _giftNextDate.AddMinutes (DefsGame.BTN_GIFT_HIDE_DELAY);
-			if (DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER < DefsGame.BTN_GIFT_HIDE_DELAY_ARR.Length - 1) {
-				++DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER;
-				PlayerPrefs.SetInt ("BTN_GIFT_HIDE_DELAY_COUNTER", DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER);
-			}
-		} else {
-			long _timeOld = Convert.ToInt64 (strTime);
-			//Convert the old time from binary to a DataTime variable
-			_giftNextDate = DateTime.FromBinary(_timeOld);
-		}
-
-		DateTime _currentDate = DateTime.UtcNow;
-		TimeSpan _difference = _giftNextDate.Subtract (_currentDate);
-		if (_difference.TotalSeconds <= 0f) {
-			//timeText.enabled = false;
-			_isWaitGiftTime = false;
-			//giftButton.EnableButtonClicks();
-		} else {
-			//timeText.enabled = true;
-			_isWaitGiftTime = true;
-			//giftButton.DisableButtonClicks();
-			timeText.text = _difference.Hours.ToString () + ":" + _difference.Minutes.ToString ();
-		}
-
+		
 		showButtons ();
-	}
-
-	void Awake()
-	{
-		Invoke("InitialRvButtonUpdate", 0.5f);
-		//PublishingService.Instance.OnRewardedVideoReadyChanged += IsVideoAdsAvailable;
-	}
-
-	void OnDestroy() {
-
-		//PublishingService.Instance.OnRewardedVideoReadyChanged -= IsVideoAdsAvailable;
 	}
 
 	void OnEnable()
@@ -74,7 +26,7 @@ public class ScreenMenu : MonoBehaviour {
 		RoadManager.OnGameplayStart += ScreenGame_OnHideMenu;
 		
 		GlobalEvents<OnGiveReward>.Happened += GetReward;
-		GlobalEvents<OnRewardedVideoAvailable>.Happened += IsRewardedVideoAvailable;
+		GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
 	}
 
 	void OnDisable()
@@ -83,10 +35,10 @@ public class ScreenMenu : MonoBehaviour {
 		RoadManager.OnGameplayStart += ScreenGame_OnHideMenu;
 		
 		GlobalEvents<OnGiveReward>.Happened -= GetReward;
-		GlobalEvents<OnRewardedVideoAvailable>.Happened -= IsRewardedVideoAvailable;
+		GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
 	}
 	
-	private void IsRewardedVideoAvailable(OnRewardedVideoAvailable e) {
+	private void IsRewardedVideoAvailable(OnRewardedAvailable e) {
 		_isShowBtnViveoAds = e.isAvailable;
 		if (_isShowBtnViveoAds) {
 			if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU) {
@@ -107,11 +59,6 @@ public class ScreenMenu : MonoBehaviour {
 		hideButtons ();
 	}
 
-	void InitialRvButtonUpdate()
-	{
-		//IsVideoAdsAvailable(PublishingService.Instance.IsRewardedVideoReady());
-	}
-
 	public void showButtons() {
 		_isButtonHiden = false;
 
@@ -122,10 +69,6 @@ public class ScreenMenu : MonoBehaviour {
 		UIManager.ShowUiElement ("elementCoins");
 		UIManager.ShowUiElement ("BtnSkins");
 		FlurryEventsManager.SendEvent ("candy_shop_impression");
-		if (!_isWaitGiftTime) {
-			UIManager.ShowUiElement ("BtnGift");
-			FlurryEventsManager.SendEvent ("collect_prize_impression");
-		}
 		if (_isShowBtnViveoAds) {
 			UIManager.ShowUiElement ("BtnVideoAds");
 			FlurryEventsManager.SendEvent ("RV_strawberries_impression", "start_screen");
@@ -163,7 +106,6 @@ public class ScreenMenu : MonoBehaviour {
 		UIManager.HideUiElement ("elementBestScore");
 		//UIManager.HideUiElement ("elementCoins");
 		UIManager.HideUiElement ("BtnSkins");
-		UIManager.HideUiElement ("BtnGift");
 		UIManager.HideUiElement ("BtnVideoAds");
 		UIManager.HideUiElement ("BtnAchievements");
 		UIManager.HideUiElement ("BtnMoreGames");
@@ -189,57 +131,6 @@ public class ScreenMenu : MonoBehaviour {
 			UIManager.HideUiElement ("BtnSound");
 			UIManager.HideUiElement ("BtnInaps");
 			UIManager.HideUiElement ("BtnGameServices");
-		}
-	}
-
-	public void add10Coins() {
-		FlurryEventsManager.SendEvent ("collect_prize");
-
-		for (int i = 0; i < 10; i++) {
-			GameObject _coin = (GameObject)Instantiate (coin, Camera.main.ScreenToWorldPoint (giftButton.transform.position), Quaternion.identity);
-			Coin coinScript = _coin.GetComponent<Coin> ();
-			coinScript.MoveToEnd();
-		}
-		//Savee the current system time as a string in the player prefs class
-		_giftNextDate = DateTime.UtcNow;
-		DefsGame.BTN_GIFT_HIDE_DELAY = DefsGame.BTN_GIFT_HIDE_DELAY_ARR [DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER];
-		if (DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER < DefsGame.BTN_GIFT_HIDE_DELAY_ARR.Length-1) {
-			++DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER;
-			PlayerPrefs.SetInt ("BTN_GIFT_HIDE_DELAY_COUNTER", DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER);
-		}
-		_giftNextDate = _giftNextDate.AddMinutes (DefsGame.BTN_GIFT_HIDE_DELAY);
-		PlayerPrefs.SetString("dateGiftClicked", _giftNextDate.ToBinary().ToString());
-		UIManager.HideUiElement ("BtnGift");
-		//timeText.enabled = true;
-		//giftButton.enabled = false;
-		_isWaitGiftTime = true;
-		//giftButton.DisableButtonClicks();
-		D.Log ("Disable Button Clicks");
-	}
-
-	void Update() {
-		if ((_isWaitGiftTime)
-		    &&((DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)
-		    ||(DefsGame.CurrentScreen == DefsGame.SCREEN_SKINS)
-		    ||(DefsGame.CurrentScreen == DefsGame.SCREEN_IAPS))) {
-			DateTime _currentDate = System.DateTime.UtcNow;
-			TimeSpan _difference = _giftNextDate.Subtract (_currentDate);
-			if (_difference.TotalSeconds <= 0f) {
-				_isWaitGiftTime = false;
-				UIManager.ShowUiElement ("BtnGift");
-				FlurryEventsManager.SendEvent ("collect_prize_impression");
-				D.Log ("Enable Button Clicks");
-			} else {
-				string _minutes = _difference.Minutes.ToString ();
-				if (_difference.Minutes < 10) {
-					_minutes = "0" + _minutes;
-				}
-				string _seconds = _difference.Seconds.ToString ();
-				if (_difference.Seconds < 10) {
-					_seconds = "0" + _seconds;
-				}
-				timeText.text = _minutes + ":" + _seconds;
-			}
 		}
 	}
 

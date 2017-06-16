@@ -108,6 +108,9 @@ public class ScreenGame : MonoBehaviour {
 		_isReviveUsed = false;
 
 		GameEvents.Send(OnNewGame);
+		
+		if (DefsGame.GameplayCounter > 1)
+		GlobalEvents<OnShowNotifications>.Call(new OnShowNotifications());
 	}
 
     private void OnEnable() {
@@ -115,7 +118,7 @@ public class ScreenGame : MonoBehaviour {
 		CarSimulator.OnAddPoints += OnAddPoints;
 		RoadManager.OnGameplayStart += OnGameplayStart;
 	    GlobalEvents<OnGiveReward>.Happened += GetReward;
-	    GlobalEvents<OnRewardedVideoAvailable>.Happened += IsRewardedVideoAvailable;
+	    GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
 	}
 
     private void OnDisable() {
@@ -123,10 +126,10 @@ public class ScreenGame : MonoBehaviour {
 	    CarSimulator.OnAddPoints -= OnAddPoints;
 	    RoadManager.OnGameplayStart -= OnGameplayStart;
 	    GlobalEvents<OnGiveReward>.Happened -= GetReward;
-	    GlobalEvents<OnRewardedVideoAvailable>.Happened -= IsRewardedVideoAvailable;
+	    GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
 	}
 	
-	private void IsRewardedVideoAvailable(OnRewardedVideoAvailable e) {
+	private void IsRewardedVideoAvailable(OnRewardedAvailable e) {
 		IsRewardedVideoReadyToShow = e.isAvailable;
 	}
 
